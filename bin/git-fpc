@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Small script to pull master, fetch --prune and delete matching branches
+# FPC stands for fetch, prune and consolidate
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
+set -o errexit
+set -o nounset
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+declare -r SCRIPT=${0##*/}
+declare -g FORCE=""
+declare -g REMOVE=""
+declare -x OVERCOMMIT_DISABLE=0
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function usage() {
+  local exit_code=$1
+  cat <<USAGE
+
+  Usage:
+    ${SCRIPT//-/ } [-h]
+
+  Opttions:
+    -h | --help    This message
+
+  Description:
+    Small script to pull master, fetch prune and delete matching local branches
+    FPC stands for fetch, prune and consolidate
+
+USAGE
+
+  exit ${exit_code}
+}
+
+# -----------------------------------------------------------------------------
+
+function parse_opts() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help)   usage 0;;
+      -*)          usage 1;;
+    esac
+    shift
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function current_branch() {
+  git rev-parse --abbrev-ref HEAD
+}
+
+# -----------------------------------------------------------------------------
+
+function git_root() {
+  git rev-parse --show-toplevel
+}
+
+# -----------------------------------------------------------------------------
+
+function uses_overcommit() {
+  [[ -f $(git_root)/.overcommit.yml ]]
+}
+
+# -----------------------------------------------------------------------------
+
+function git_env() {
+  if uses_overcommit; then
+    OVERCOMMIT_DISABLE=1
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function switch_to_master() {
+  local branch=$(current_branch)
+  if [[ ${branch} != master ]]; then
+    echo "Switching to branch 'master'"
+    git checkout master
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function pull() {
+  git pull
+}
+
+# -----------------------------------------------------------------------------
+
+function fetch_prune() {
+  git fetch --prune 2>&1 | \
+    sed -r \
+     -e '/\[deleted\]/!d' \
+     -e 's|^.[^/]*/||g'
+}
+
+# -----------------------------------------------------------------------------
+
+function delete_branch() {
+  local branches=( "$@" );
+  local local_branches=$(git branch | grep -v master)
+  for branch in ${branches[@]}; do
+    if [[ ${local_branches} =~ ${branch} ]]; then
+      git branch -d ${branch}
+    fi
+  done
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+parse_opts "$@"
+git_env
+switch_to_master
+pull
+deleted_branches=( "" $( fetch_prune ) )
+delete_branch "${deleted_branches[@]:-1}"
+switch_to_master

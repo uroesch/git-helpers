@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# -----------------------------------------------------------------------------
+# Small and useless script to show the various objects of a git commit
+# in a tree like fashion. I'm sure there is already a better tool but
+# I was to lazy to look for it in the abyss of the git man pages :)
+#
+# -----------------------------------------------------------------------------
+# Todo:
+#   * Test with tags
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+declare -r SCRIPT=${0##*/}
+declare -g COMMIT=${1:-HEAD}
+declare -r INDENT_WIDTH=2
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+usage() {
+  local exit_code=${1:-1}
+  echo -e "\n  Usage:\n     ${SCRIPT/-/ } [-h] [<SHA1>|HEAD]\n\n"
+  exit ${exit_code}
+}
+
+# -----------------------------------------------------------------------------
+
+parse_opts() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help) usage 0 ;;
+      -*)        usage 1 ;;
+    esac
+    shift
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+print_entry() {
+  local indent=$1; shift;
+  local object_type=$1; shift;
+  local id=$1; shift;
+  local name=$1; shift;
+  printf "%${indent}s + %-5s  %s  %s\n" "" ${object_type} ${id} "${name}"
+}
+
+# -----------------------------------------------------------------------------
+
+parse_tree() {
+  local object_id=$1; shift;
+  local indent=$1; shift
+  git cat-file -p ${object_id} | while IFS=$'\n' read line; do
+    echo $line | while read mode object_type id name; do
+      if [[ ${object_type} == blob ]]; then
+        print_entry ${indent} ${object_type} ${id} "${name}"
+      else
+        print_entry ${indent} ${object_type} ${id} "${name}"
+        parse_tree ${id} $(( $indent + ${INDENT_WIDTH} ))
+      fi
+    done
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+parse_commit() {
+  local object_id=$1; shift;
+  local indent=$1; shift
+  tree=$( git cat-file -p ${object_id} | awk '/^tree/ {print $2}')
+  print_entry ${indent} tree ${tree} ""
+  parse_tree ${tree} $(( $indent + ${INDENT_WIDTH} ))
+}
+
+# -----------------------------------------------------------------------------
+
+parse_object() {
+  local object_id=$1; shift
+  local indent=$1; shift
+  case $( git cat-file -t ${object_id} ) in
+    tag)    : ;;
+    commit) parse_commit ${object_id} ${indent} ;;
+    tree)   parse_tree ${object_id} $(( $indent + ${INDENT_WIDTH} ));;
+    blob)   : ;;
+  esac
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+parse_opts "$@"
+echo commit ${COMMIT}
+parse_object ${COMMIT} 1

@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# -----------------------------------------------------------------------------
+# Small script to remove the trailing white space from files.
+# requires GNU sed.
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
+set -o errexit
+set -o nounset
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+declare -r SCRIPT=${0#*/}
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function usage() {
+  local exit_code=$1;
+  echo
+  echo "  Ussage:"
+  echo "    ${SCRIPT} [-h|--help] <file> [<file> [..]]"
+  echo
+  echo "    strip-trailing-whitespace does exactly what the name suggests."
+  echo "    Remove trailing whitepace from the each line of a text file."
+  echo "    Additionally chops off exessive new lines at file end."
+  echo "    Note: Not tested with binary files. Use at your own risk!"
+  echo
+  exit ${exit_code}
+}
+
+# -----------------------------------------------------------------------------
+
+function parse_opts() {
+  [[ $# -eq 0 ]] && usage 1
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help) usage 0;;
+    esac
+     shift
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function remove_redundant_white_space() {
+  for file in "$@"; do
+    [[ -h ${file} ]] && continue # skip symlinks!
+    if [[ -f ${file} ]]; then
+      remove_trailing_white_space "${file}"
+      remove_trailing_newlines "${file}"
+    fi
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function remove_trailing_white_space() {
+  local file=${1}; shift
+  sed -i -r 's/[[:space:]]+$//' "${file}";
+}
+
+# -----------------------------------------------------------------------------
+
+function remove_trailing_newlines() {
+  local file=${1}; shift
+  sed -i -r -n 'H; ${ x; s/^\n//; s/\n{1,}$//; p }' "${file}"
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+parse_opts "$@"
+remove_redundant_white_space "$@"

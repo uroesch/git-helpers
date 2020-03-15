@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Small script to pull master, run through all branches and rebase them to
+# master
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
+set -o errexit
+set -o nounset
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+declare -r SCRIPT=${0##*/}
+declare -g PUSH="false"
+declare -x OVERCOMMIT_DISABLE=0
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function usage() {
+  local exit_code=$1
+  cat <<USAGE
+
+  Usage:"
+    ${SCRIPT//-/ } [-h] [-p]
+
+  Opttions:
+    -h | --help    This message
+    -p | --push    Push rebased repos to upstream
+
+  Description:
+    Small script to pull master and rebase all branches sequentially
+
+USAGE
+
+  exit ${exit_code}
+}
+
+# -----------------------------------------------------------------------------
+
+function parse_opts() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help)   usage 0;;
+      -p|--push)   PUSH=true;;
+      -*)          usage 1;;
+    esac
+    shift
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function current_branch() {
+  git rev-parse --abbrev-ref HEAD
+}
+
+# -----------------------------------------------------------------------------
+
+function git_root() {
+  git rev-parse --show-toplevel
+}
+
+# -----------------------------------------------------------------------------
+
+function uses_overcommit() {
+  [[ -f $(git_root)/.overcommit.yml ]]
+}
+
+# -----------------------------------------------------------------------------
+
+function git_env() {
+  if uses_overcommit; then
+    OVERCOMMIT_DISABLE=1
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function switch_to_master() {
+  local branch=$(current_branch)
+  if [[ ${branch} != master ]]; then
+    echo "Switching to branch 'master'"
+    git checkout master
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function pull() {
+  git pull
+}
+
+# -----------------------------------------------------------------------------
+
+function rebase_branches() {
+  local local_branches=$(git branch | grep -v master)
+  for branch in ${local_branches[@]}; do
+    echo
+    echo "---------------------------------------------------------"
+    git checkout ${branch}
+    git rebase master
+    if [[ ${PUSH} == true ]]; then
+      git push -f origin ${branch}
+    fi
+  done
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+parse_opts "$@"
+git_env
+switch_to_master
+pull
+rebase_branches
+switch_to_master

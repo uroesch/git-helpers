@@ -1,0 +1,136 @@
+# Git Helpers - A small personal collection of scripts speeding up workflow
+
+This is a small collection of tools to help with my personal git workflow.
+
+## Installation 
+
+Simply copy the content of the `bin` directory into your local path e.g. 
+`~/bin/` and ensure the they have execute permission and use them as
+outlined below. 
+
+
+## Commands 
+
+### git fpc
+
+`FPC` stands for fetch, prune clean. It is meant to be used to be used after
+a pull request was merged. Essentially it will switch to `master` and `pull`
+the new version. Then run `fetch --prune`, gather the deleted remote branches
+and delete them locally.
+
+#### Usage 
+
+```
+  Usage:
+    git fpc [-h]
+
+  Opttions:
+    -h | --help    This message
+
+  Description:
+    Small script to pull master, fetch prune and delete matching local branches
+    FPC stands for fetch, prune and consolidate
+```
+
+### git autorebase
+
+The `autorebase` command assumes there are multiple local branches that need
+syncronizing with `master`. It is basically a glofified loop changing into
+each branch and executing `git rebase master`.
+
+### Usage
+
+```
+  Usage:"
+    git autorebase [-h] [-p]
+
+  Opttions:
+    -h | --help    This message
+    -p | --push    Push rebased repos to upstream
+
+  Description:
+    Small script to pull master and rebase all branches sequentially
+```
+
+### git opush
+
+This is a shortcut for the command `git push origin <branch>`. Pushes every branch
+but `master`. With option `-f` does force push and `-r` removes a remote branch.
+
+#### Usage 
+
+```
+  Usage:
+    git opush [-h] [-f] [-r]
+
+  Opttions:
+    -h | --help    This message
+    -f | --force   Force a push to upstream
+    -r | --remove  Remove the repository from upstream
+
+  Description:
+    Origin push to upstream without a fuss. Exludes pushes to master.
+
+```
+
+### git walktree
+
+Walktree is not really a helper. Wrote it to demonstrate how git objects are linked
+in relation to each other. Used to visualize it for a Git Course I wrote.
+
+#### Sample output
+
+The sample output below shows all objects and how they are linked together.
+This is mainly meant to teach newcomers to git how the unterbelly of the
+beast functions. 
+
+```
+commit HEAD
+  + tree   7527799f603140237265cec303165533152cd059  
+    + blob   2f945df9add136a0922041000b2979b6c9d1e81e  .gitattributes
+    + blob   1e7eabe5f1514eebf7d7abad1de726b514889871  .gitignore
+    + tree   23156938ebc1c46acf68827081925e1a65427e05  App
+      + tree   9ab74ed98727ca90f6cbaf0c9aeeba8fe00ab7b3  AppInfo
+        + tree   ce102c8179bcf3114efab0a8ad3748860fb84f52  Launcher
+          + blob   11b145e1401cf7b678d6bb2926d102fbdd97e724  JoplinPortable.ini
+        + blob   39c7da0416a2beffbf7beab9d06c8c15c4628aa4  appicon.ico
+        + blob   5d5865ecd45be90194a347b6c4cc81ec8e1ab699  appicon_128.png
+        + blob   e65cfaed2eca51cfd33098fbdbebf24f164e1f47  appicon_16.png
+        + blob   ef881abd1b466c497e4b8c206b879f75cac07d55  appicon_256.png
+        + blob   828f503182eff7a6e8322be79a17028af3f04bab  appicon_32.png
+        + blob   d5f6fb14d8a22cd5a6f02488fa37ba0160a1a150  appicon_48.png
+        + blob   31dbd5d7e6e264871ba187a14b19436a53e4d901  appicon_75.png
+        + blob   b8626dabf082b0bb5f31503ec66d4f6bf8c8a00f  appinfo.ini
+        + blob   b2e59de73d67909a36689a9ba21cdd667f6e2844  installer.ini
+        + blob   9b5aa8bb506bc7f8c96e19110bf79623002abe01  update.ini
+    + tree   347b6dc9cf1e978b355b5f652a06b88df11b08c3  Other
+      + tree   84da419e374719d292f50b96cf7722a206c3a5df  Update
+        + blob   f9016721a48ed8234d459ffe398f46d5804e11c0  Update.ps1
+    + blob   6a02755f2781afb78c3af6e2a4d2e98eaa343c0e  README.md
+    + blob   1d2f9cf3d374d888e2fae3b684590c2f4d293bc4  help.html
+```
+
+#### Usage
+
+```
+  Usage:
+     git walktree [-h] [<SHA1>|HEAD]
+```
+
+### strip-trailing-whitespace
+
+Not really a git command but a helper to trim trailing white space from
+files. It also trims exessive new lines at the file end.
+
+#### Usage
+
+```
+  Ussage:
+    strip-trailing-whitespace [-h|--help] <file> [<file> [..]]
+
+    strip-trailing-whitespace does exactly what the name suggests.
+    Remove trailing whitepace from the each line of a text file.
+    Additionally chops off exessive new lines at file end.
+    Note: Not tested with binary files. Use at your own risk!
+
+```

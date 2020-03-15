@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Small script to push upstream without a fuss
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
+set -o errexit
+set -o nounset
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+declare -r SCRIPT=${0##*/}
+declare -g FORCE=""
+declare -g REMOVE=""
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function usage() {
+  local exit_code=$1
+  cat <<USAGE
+
+  Usage:
+    ${SCRIPT//-/ } [-h] [-f] [-r]
+
+  Opttions:
+    -h | --help    This message
+    -f | --force   Force a push to upstream
+    -r | --remove  Remove the repository from upstream
+
+  Description:
+    Origin push to upstream without a fuss. Exludes pushes to master.
+
+USAGE
+
+  exit ${exit_code}
+}
+
+# -----------------------------------------------------------------------------
+
+function parse_opts() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h|--help)   usage 0;;
+      -f|--force)  FORCE="true";;
+      -r|--remove) REMOVE="true";;
+      -*)          usage 1;;
+    esac
+    shift
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function current_branch() {
+  git rev-parse --abbrev-ref HEAD
+}
+
+# -----------------------------------------------------------------------------
+
+function push_origin() {
+  local branch=$(current_branch)
+  if [[ ${branch} == master ]]; then
+    echo "Not pushing master!"
+    exit 1
+  fi
+  git push ${FORCE:+-f} origin ${REMOVE:+:}${branch}
+}
+
+# -----------------------------------------------------------------------------
+
+function push_tags() {
+  git push --tags
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+parse_opts "$@"
+push_origin
+push_tags
