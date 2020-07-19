@@ -16,7 +16,7 @@ set -o pipefail
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION="0.3.0"
+declare -r VERSION="0.3.1"
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -g FORCE=""
@@ -112,6 +112,9 @@ function pull() {
 # -----------------------------------------------------------------------------
 
 function fetch_prune() {
+  # Set to locale to 'C' so a single 
+  # filter of [delete] will work  
+  LC_ALL=C \
   git fetch --prune 2>&1 | \
     sed -r \
      -e '/\[deleted\]/!d' \
