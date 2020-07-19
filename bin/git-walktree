@@ -20,6 +20,9 @@ set -o pipefail
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
+declare -r VERSION=0.1.1
+declare -r AUTHOR="Urs Roesch <github@bun.ch>"
+declare -r LICENSE="GPLv2"
 declare -g COMMIT=${1:-HEAD}
 declare -r INDENT_WIDTH=2
 
@@ -28,17 +31,30 @@ declare -r INDENT_WIDTH=2
 # -----------------------------------------------------------------------------
 usage() {
   local exit_code=${1:-1}
-  echo -e "\n  Usage:\n     ${SCRIPT/-/ } [-h] [<SHA1>|HEAD]\n\n"
+  cat << USAGE
+  Usage:
+    ${SCRIPT/-/ } [options] [<SHA1>|HEAD]
+
+  Options:
+    -h | --help     This message
+    -V | --version  Display version and exit
+
+  Description:
+    Script to show the object types of a commit. This is meant a s tool for
+    education to show the inner workings of git.
+
+USAGE
   exit ${exit_code}
 }
 
 # -----------------------------------------------------------------------------
 
-parse_opts() {
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-      -h|--help) usage 0 ;;
-      -*)        usage 1 ;;
+parse_options() {
+  while [[ ${#} -gt 0 ]]; do
+    case ${1} in
+    -h|--help)    usage 0 ;;
+    -V|--version) version ;;
+    -*)           usage 1 ;;
     esac
     shift
   done
@@ -46,19 +62,27 @@ parse_opts() {
 
 # -----------------------------------------------------------------------------
 
+function version() {
+  printf "%s v%s\nCopyright (c) %s\nLicense - %s\n" \
+    "${SCRIPT}" "${VERSION}" "${AUTHOR}" "${LICENSE}"
+  exit 0
+}
+
+# -----------------------------------------------------------------------------
+
 print_entry() {
-  local indent=$1; shift;
-  local object_type=$1; shift;
-  local id=$1; shift;
-  local name=$1; shift;
+  local indent=${1}; shift;
+  local object_type=${1}; shift;
+  local id=${1}; shift;
+  local name=${1}; shift;
   printf "%${indent}s + %-5s  %s  %s\n" "" ${object_type} ${id} "${name}"
 }
 
 # -----------------------------------------------------------------------------
 
 parse_tree() {
-  local object_id=$1; shift;
-  local indent=$1; shift
+  local object_id=${1}; shift;
+  local indent=${1}; shift
   git cat-file -p ${object_id} | while IFS=$'\n' read line; do
     echo $line | while read mode object_type id name; do
       if [[ ${object_type} == blob ]]; then
@@ -74,8 +98,8 @@ parse_tree() {
 # -----------------------------------------------------------------------------
 
 parse_commit() {
-  local object_id=$1; shift;
-  local indent=$1; shift
+  local object_id=${1}; shift;
+  local indent=${1}; shift
   tree=$( git cat-file -p ${object_id} | awk '/^tree/ {print $2}')
   print_entry ${indent} tree ${tree} ""
   parse_tree ${tree} $(( $indent + ${INDENT_WIDTH} ))
@@ -84,19 +108,19 @@ parse_commit() {
 # -----------------------------------------------------------------------------
 
 parse_object() {
-  local object_id=$1; shift
-  local indent=$1; shift
+  local object_id=${1}; shift
+  local indent=${1}; shift
   case $( git cat-file -t ${object_id} ) in
-    tag)    : ;;
-    commit) parse_commit ${object_id} ${indent} ;;
-    tree)   parse_tree ${object_id} $(( $indent + ${INDENT_WIDTH} ));;
-    blob)   : ;;
+  tag)    : ;;
+  commit) parse_commit ${object_id} ${indent} ;;
+  tree)   parse_tree ${object_id} $(( $indent + ${INDENT_WIDTH} )) ;;
+  blob)   : ;;
   esac
 }
 
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
-parse_opts "$@"
+parse_options "${@}"
 echo commit ${COMMIT}
 parse_object ${COMMIT} 1
