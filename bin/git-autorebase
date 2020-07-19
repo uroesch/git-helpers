@@ -10,11 +10,16 @@
 # -----------------------------------------------------------------------------
 set -o errexit
 set -o nounset
+set -o pipefail
 
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
+declare -r VERSION=0.3.0
+declare -r AUTHOR="Urs Roesch <github@bun.ch>"
+declare -r LICENSE="GLPv2"
+declare -r DIVIDER=$(printf "%0.1s" -{0..80})
 declare -g PUSH="false"
 declare -x OVERCOMMIT_DISABLE=0
 
@@ -22,35 +27,45 @@ declare -x OVERCOMMIT_DISABLE=0
 # Functions
 # -----------------------------------------------------------------------------
 function usage() {
-  local exit_code=$1
+  local exit_code=${1:-1}
   cat <<USAGE
 
-  Usage:"
-    ${SCRIPT//-/ } [-h] [-p]
+  Usage:
+    ${SCRIPT//-/ } [options]
 
   Opttions:
     -h | --help    This message
     -p | --push    Push rebased repos to upstream
+    -V | --version Display version and exit
 
   Description:
-    Small script to pull master and rebase all branches sequentially
+    Small script to pull the master branch and then rebase all other
+    branches sequentially to master.
 
 USAGE
-
   exit ${exit_code}
 }
 
 # -----------------------------------------------------------------------------
 
-function parse_opts() {
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-      -h|--help)   usage 0;;
-      -p|--push)   PUSH=true;;
-      -*)          usage 1;;
+function parse_options() {
+  while [[ ${#} -gt 0 ]]; do
+    case ${1} in
+    -h|--help)    usage 0;;
+    -p|--push)    PUSH=true;;
+    -V|--version) version;;
+    -*)           usage 1;;
     esac
     shift
   done
+}
+
+# -----------------------------------------------------------------------------
+
+function version() {
+  printf "%s v%s\nCopyright (c) %s\nLicense - %s\n" \
+    "${SCRIPT}" "${VERSION}" "${AUTHOR}" "${LICENSE}"
+  exit 0
 }
 
 # -----------------------------------------------------------------------------
@@ -101,7 +116,7 @@ function rebase_branches() {
   local local_branches=$(git branch | grep -v master)
   for branch in ${local_branches[@]}; do
     echo
-    echo "---------------------------------------------------------"
+    echo "${DIVIDER}"
     git checkout ${branch}
     git rebase master
     if [[ ${PUSH} == true ]]; then
@@ -113,7 +128,7 @@ function rebase_branches() {
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
-parse_opts "$@"
+parse_options "${@}"
 git_env
 switch_to_master
 pull

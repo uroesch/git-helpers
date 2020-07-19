@@ -9,11 +9,15 @@
 # -----------------------------------------------------------------------------
 set -o errexit
 set -o nounset
+set -o pipefail
 
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
+declare -r VERSION=0.3.0
+declare -r AUTHOR="Urs Roesch <github@bun.ch>"
+declare -r LICENSE="GPLv2"
 declare -g FORCE=""
 declare -g REMOVE=""
 
@@ -21,16 +25,17 @@ declare -g REMOVE=""
 # Functions
 # -----------------------------------------------------------------------------
 function usage() {
-  local exit_code=$1
+  local exit_code=${1:-1}
   cat <<USAGE
 
   Usage:
-    ${SCRIPT//-/ } [-h] [-f] [-r]
+    ${SCRIPT//-/ } [options]
 
   Opttions:
     -h | --help    This message
     -f | --force   Force a push to upstream
     -r | --remove  Remove the repository from upstream
+    -V | --version Display version and exit
 
   Description:
     Origin push to upstream without a fuss. Exludes pushes to master.
@@ -42,16 +47,25 @@ USAGE
 
 # -----------------------------------------------------------------------------
 
-function parse_opts() {
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-      -h|--help)   usage 0;;
-      -f|--force)  FORCE="true";;
-      -r|--remove) REMOVE="true";;
-      -*)          usage 1;;
+function parse_options() {
+  while [[ ${#} -gt 0 ]]; do
+    case ${1} in
+    -h|--help)    usage 0;;
+    -f|--force)   FORCE="true";;
+    -r|--remove)  REMOVE="true";;
+    -V|--version) version;;
+    -*)           usage 1;;
     esac
     shift
   done
+}
+
+# -----------------------------------------------------------------------------
+
+function version() {
+  printf "%s v%s\nCopyright (c) %s\nLicense - %s\n" \
+    "${SCRIPT}" "${VERSION}" "${AUTHOR}" "${LICENSE}"
+  exit 0
 }
 
 # -----------------------------------------------------------------------------
@@ -80,6 +94,6 @@ function push_tags() {
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
-parse_opts "$@"
+parse_options "${@}"
 push_origin
 push_tags

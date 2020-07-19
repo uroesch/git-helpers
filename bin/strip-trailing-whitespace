@@ -10,36 +10,49 @@
 # -----------------------------------------------------------------------------
 set -o errexit
 set -o nounset
+set -o pipefail
 
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0#*/}
+declare -r VERSION=0.4.0
+declare -r AUTHOR="Urs Roesch <github@bun.ch>"
+declare -r LICENSE="GPLv2"
 
 # -----------------------------------------------------------------------------
 # Functions
 # -----------------------------------------------------------------------------
 function usage() {
-  local exit_code=$1;
-  echo
-  echo "  Ussage:"
-  echo "    ${SCRIPT} [-h|--help] <file> [<file> [..]]"
-  echo
-  echo "    strip-trailing-whitespace does exactly what the name suggests."
-  echo "    Remove trailing whitepace from the each line of a text file."
-  echo "    Additionally chops off exessive new lines at file end."
-  echo "    Note: Not tested with binary files. Use at your own risk!"
-  echo
+  local exit_code=${1:-1};
+  cat << USAGE
+
+  Usage:
+    ${SCRIPT} [options] <file> [<file> [..]]
+
+  Options:
+    -h | --help    This message
+    -V | --version Display version and exit
+
+  Description:
+    strip-trailing-whitespace does exactly what the name suggests.
+    Remove trailing whitepace from the each line of a text file.
+    Additionally chops off exessive new lines at file end.
+    Note: Not tested with binary files. Use at your own risk!
+
+USAGE
   exit ${exit_code}
 }
 
 # -----------------------------------------------------------------------------
 
-function parse_opts() {
-  [[ $# -eq 0 ]] && usage 1
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-      -h|--help) usage 0;;
+function parse_options() {
+  [[ ${#} -eq 0 ]] && usage 1
+  while [[ ${#} -gt 0 ]]; do
+    case ${1} in
+    -h|--help)    usage 0;;
+    -V|--version) version;;
+    -*)           usage 1;;
     esac
      shift
   done
@@ -47,8 +60,16 @@ function parse_opts() {
 
 # -----------------------------------------------------------------------------
 
+function version() {
+  printf "%s v%s\nCopyright (c) %s\nLicense - %s\n" \
+    "${SCRIPT}" "${VERSION}" "${AUTHOR}" "${LICENSE}"
+  exit 0
+}
+
+# -----------------------------------------------------------------------------
+
 function remove_redundant_white_space() {
-  for file in "$@"; do
+  for file in "${@}"; do
     [[ -h ${file} ]] && continue # skip symlinks!
     if [[ -f ${file} ]]; then
       remove_trailing_white_space "${file}"
@@ -74,5 +95,5 @@ function remove_trailing_newlines() {
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
-parse_opts "$@"
-remove_redundant_white_space "$@"
+parse_options "${@}"
+remove_redundant_white_space "${@}"
