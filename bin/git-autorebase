@@ -12,11 +12,17 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# check bash version compatiblity requires 4.2 or better
+shopt -u compat41 2>/dev/null || {
+  echo -n "\nBash Version 4.2 or higher is required!\n";
+  exit 127;
+}
+
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.3.0
+declare -r VERSION=0.3.1
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GLPv2"
 declare -r DIVIDER=$(printf "%0.1s" -{0..80})
