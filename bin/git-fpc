@@ -21,6 +21,7 @@ declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -g FORCE=""
 declare -g REMOVE=""
+declare -g BASE="master"
 declare -x OVERCOMMIT_DISABLE=0
 
 # -----------------------------------------------------------------------------
@@ -36,6 +37,8 @@ function usage() {
   Opttions:
     -h | --help    This message
     -V | --version Display version and exit
+    -b | --base    Set the default base branch
+                   Default: '${BASE}'
 
   Description:
     Small script to pull master, fetch prune and delete matching local branches
@@ -53,6 +56,7 @@ function parse_options() {
     case ${1} in
     -h|--help)    usage 0;;
     -V|--version) version;;
+    -b|--base)    shift; BASE=${1};;
     -*)           usage 1;;
     esac
     shift
@@ -95,11 +99,11 @@ function git_env() {
 
 # -----------------------------------------------------------------------------
 
-function switch_to_master() {
+function switch_to_base() {
   local branch=$(current_branch)
-  if [[ ${branch} != master ]]; then
-    echo "Switching to branch 'master'"
-    git checkout master
+  if [[ ${branch} != ${BASE} ]]; then
+    echo "Switching to branch '${BASE}'"
+    git checkout ${BASE}
   fi
 }
 
@@ -125,7 +129,7 @@ function fetch_prune() {
 
 function delete_branches() {
   local -a deleted_branches=( $(fetch_prune) )
-  local -a local_branches=( $(git branch | grep -v master) )
+  local -a local_branches=( $(git branch | grep -wv ${BASE}) )
   for branch in ${deleted_branches[@]:-}; do
     if [[ ${local_branches[@]:-} =~ ${branch} ]]; then
       git branch -d ${branch}
@@ -138,7 +142,7 @@ function delete_branches() {
 # -----------------------------------------------------------------------------
 parse_options "${@}"
 git_env
-switch_to_master
+switch_to_base
 pull
 delete_branches
-switch_to_master
+switch_to_base
