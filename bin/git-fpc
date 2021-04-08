@@ -22,12 +22,12 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION="0.4.1"
+declare -r VERSION="0.5.0"
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -g FORCE=""
 declare -g REMOVE=""
-declare -g BASE="master"
+declare -g BASE=""
 declare -x OVERCOMMIT_DISABLE=0
 
 # -----------------------------------------------------------------------------
@@ -89,6 +89,16 @@ function git_root() {
   git rev-parse --show-toplevel
 }
 
+
+# -----------------------------------------------------------------------------
+
+function which_base() {
+  [[ -n ${BASE} ]] && return 0
+  # prefer master over main
+  local -a branches=( $(git branch | grep -oE "\<(master|main)\>" | sort -r ) )
+  BASE=${branches[0]}
+}
+
 # -----------------------------------------------------------------------------
 
 function uses_overcommit() {
@@ -122,8 +132,8 @@ function pull() {
 # -----------------------------------------------------------------------------
 
 function fetch_prune() {
-  # Set to locale to 'C' so a single 
-  # filter of [delete] will work  
+  # Set to locale to 'C' so a single
+  # filter of [delete] will work
   LC_ALL=C \
   git fetch --prune 2>&1 | \
     sed -r \
@@ -148,6 +158,7 @@ function delete_branches() {
 # -----------------------------------------------------------------------------
 parse_options "${@}"
 git_env
+which_base
 switch_to_base
 pull
 delete_branches
