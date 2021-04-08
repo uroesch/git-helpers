@@ -2,7 +2,7 @@
 
 # -----------------------------------------------------------------------------
 # Small script to pull master, run through all branches and rebase them to
-# master
+# master/main
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -22,11 +22,12 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.3.1
+declare -r VERSION=0.4.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GLPv2"
 declare -r DIVIDER=$(printf "%0.1s" -{0..80})
 declare -g PUSH="false"
+declare -g BASE=""
 declare -x OVERCOMMIT_DISABLE=0
 
 # -----------------------------------------------------------------------------
@@ -45,8 +46,8 @@ function usage() {
     -V | --version Display version and exit
 
   Description:
-    Small script to pull the master branch and then rebase all other
-    branches sequentially to master.
+    Small script to pull the master/main branch and then rebase all other
+    branches sequentially to master/main.
 
 USAGE
   exit ${exit_code}
@@ -88,6 +89,15 @@ function git_root() {
 
 # -----------------------------------------------------------------------------
 
+function which_base() {
+  [[ -n ${BASE} ]] && return 0
+  # prefer master over main
+  local -a branches=( $(git branch | grep -oE "\<(master|main)\>" | sort -r ) )
+  BASE=${branches[0]}
+}
+
+# -----------------------------------------------------------------------------
+
 function uses_overcommit() {
   [[ -f $(git_root)/.overcommit.yml ]]
 }
@@ -102,11 +112,11 @@ function git_env() {
 
 # -----------------------------------------------------------------------------
 
-function switch_to_master() {
+function switch_to_base() {
   local branch=$(current_branch)
-  if [[ ${branch} != master ]]; then
-    echo "Switching to branch 'master'"
-    git checkout master
+  if [[ ${branch} != ${BASE} ]]; then
+    echo "Switching to branch '$BASE'"
+    git checkout ${BASE}
   fi
 }
 
@@ -119,12 +129,12 @@ function pull() {
 # -----------------------------------------------------------------------------
 
 function rebase_branches() {
-  local local_branches=$(git branch | grep -v master)
+  local local_branches=$(git branch | grep -v ${BASE})
   for branch in ${local_branches[@]}; do
     echo
     echo "${DIVIDER}"
     git checkout ${branch}
-    git rebase master
+    git rebase ${BASE}
     if [[ ${PUSH} == true ]]; then
       git push -f origin ${branch}
     fi
@@ -136,7 +146,8 @@ function rebase_branches() {
 # -----------------------------------------------------------------------------
 parse_options "${@}"
 git_env
-switch_to_master
+which_base
+switch_to_base
 pull
 rebase_branches
-switch_to_master
+switch_to_base

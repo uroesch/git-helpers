@@ -22,10 +22,11 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.3.1
+declare -r VERSION=0.4.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -g FORCE=""
+declare -g BASE=""
 declare -g REMOVE=""
 
 # -----------------------------------------------------------------------------
@@ -45,7 +46,7 @@ function usage() {
     -V | --version Display version and exit
 
   Description:
-    Origin push to upstream without a fuss. Exludes pushes to master.
+    Origin push to upstream without a fuss. Exludes pushes to master/main.
 
 USAGE
 
@@ -83,10 +84,19 @@ function current_branch() {
 
 # -----------------------------------------------------------------------------
 
+function which_base() {
+  [[ -n ${BASE} ]] && return 0
+  # prefer master over main
+  local -a branches=( $(git branch | grep -oE "\<(master|main)\>" | sort -r ) )
+  BASE=${branches[0]}
+}
+
+# -----------------------------------------------------------------------------
+
 function push_origin() {
   local branch=$(current_branch)
-  if [[ ${branch} == master ]]; then
-    echo "Not pushing master!"
+  if [[ ${branch} == ${BASE} ]]; then
+    echo "Not pushing ${BASE}!"
     exit 1
   fi
   git push ${FORCE:+-f} origin ${REMOVE:+:}${branch}
@@ -102,5 +112,6 @@ function push_tags() {
 # Main
 # -----------------------------------------------------------------------------
 parse_options "${@}"
+which_base
 push_origin
 push_tags
