@@ -18,7 +18,7 @@ load includes
   strip-trailing-whitespace -V | grep -w ${STRIP_TRAILING_WHITESPACE_VERSION}
 }
 
-@test "Strip whitespace from file" { 
+@test "Strip whitespace from file" {
   test::create-tempdir stw
   cp ${BATS_TEST_DIRNAME}/files/whitespace.txt ${TEMPDIR}/
   strip-trailing-whitespace ${TEMPDIR}/whitespace.txt
