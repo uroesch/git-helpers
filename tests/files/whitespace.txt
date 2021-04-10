@@ -1,0 +1,10 @@
+This is a test file for the strip-trailing-whitespace scripts   
+
+There is intentional whitespace at the end of each line 
+and at the the end multiple carriage returns at the end 
+of the file.
+
+
+
+
+
