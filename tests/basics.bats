@@ -49,3 +49,19 @@ load includes
 @test "Common options: git opush -V" {
   git-opush -V | grep -w ${GIT_OPUSH_VERSION}
 }
+
+@test "Common options: git walktree --help" {
+  git-walktree --help
+}
+
+@test "Common options: git walktree -h" {
+  git-walktree -h
+}
+
+@test "Common options: git walktree --version" {
+  git-walktree --version | grep -w ${GIT_WALKTREE_VERSION}
+}
+
+@test "Common options: git walktree -V" {
+  git-walktree -V | grep -w ${GIT_WALKTREE_VERSION}
+}
