@@ -52,4 +52,4 @@ jobs:
           --volume $(pwd):/git-helpers \
           --workdir /git-helpers \
           bash:${{ matrix.bash }} \
-          bash -c "$(declare -f install-dependencies); install-dependencies && make test"
+          bash -c "$(declare -f install-dependencies); install-dependencies && make test && echo \${BASH_VERSION}"
