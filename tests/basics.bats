@@ -2,66 +2,50 @@
 
 load includes
 
-@test "Common options: git autorebase --help" {
+@test "git autorebase: Common option --help" {
   git-autorebase --help
 }
 
-@test "Common options: git autorebase -h" {
+@test "git autorebase: Common option -h" {
   git-autorebase -h
 }
 
-@test "Common options: git autorebase --version" {
+@test "git autorebase: Common option --version" {
   git-autorebase --version | grep -w ${GIT_AUTOREBASE_VERSION}
 }
 
-@test "Common options: git autorebase -V" {
+@test "git autorebase: Common option -V" {
   git-autorebase -V | grep -w ${GIT_AUTOREBASE_VERSION}
 }
 
-@test "Common options: git fpc --help" {
+@test "git fpc: Common option --help" {
   git-fpc --help
 }
 
-@test "Common options: git fpc -h" {
+@test "git fpc: Common option -h" {
   git-fpc -h
 }
 
-@test "Common options: git fpc --version" {
+@test "git fpc: Common option --version" {
   git-fpc --version | grep -w ${GIT_FPC_VERSION}
 }
 
-@test "Common options: git fpc -V" {
+@test "git fpc: Common option -V" {
   git-fpc -V | grep -w ${GIT_FPC_VERSION}
 }
 
-@test "Common options: git opush --help" {
+@test "git opush: Common option --help" {
   git-opush --help
 }
 
-@test "Common options: git opush -h" {
+@test "git opush: Common option -h" {
   git-opush -h
 }
 
-@test "Common options: git opush --version" {
+@test "git opush: Common option --version" {
   git-opush --version | grep -w ${GIT_OPUSH_VERSION}
 }
 
-@test "Common options: git opush -V" {
+@test "git opush: Common option -V" {
   git-opush -V | grep -w ${GIT_OPUSH_VERSION}
-}
-
-@test "Common options: git walktree --help" {
-  git-walktree --help
-}
-
-@test "Common options: git walktree -h" {
-  git-walktree -h
-}
-
-@test "Common options: git walktree --version" {
-  git-walktree --version | grep -w ${GIT_WALKTREE_VERSION}
-}
-
-@test "Common options: git walktree -V" {
-  git-walktree -V | grep -w ${GIT_WALKTREE_VERSION}
 }
