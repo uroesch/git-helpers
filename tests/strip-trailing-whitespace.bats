@@ -2,23 +2,23 @@
 
 load includes
 
-@test "Common options: strip-trailing-whitespace --help" {
+@test "strip-trailing-whitespace: Common option --help" {
   strip-trailing-whitespace --help
 }
 
-@test "Common options: strip-trailing-whitespace -h" {
+@test "strip-trailing-whitespace: Common option -h" {
   strip-trailing-whitespace -h
 }
 
-@test "Common options: strip-trailing-whitespace --version" {
+@test "strip-trailing-whitespace: Common option --version" {
   strip-trailing-whitespace --version | grep -w ${STRIP_TRAILING_WHITESPACE_VERSION}
 }
 
-@test "Common options: strip-trailing-whitespace -V" {
+@test "strip-trailing-whitespace: Common option -V" {
   strip-trailing-whitespace -V | grep -w ${STRIP_TRAILING_WHITESPACE_VERSION}
 }
 
-@test "Strip whitespace from file" {
+@test "strip-trailing-whitespace: Strip white space from file" {
   test::create-tempdir stw
   cp ${BATS_TEST_DIRNAME}/files/whitespace.txt ${TEMPDIR}/
   strip-trailing-whitespace ${TEMPDIR}/whitespace.txt
