@@ -1,92 +1,96 @@
-# Git Helpers - A small personal collection of scripts speeding up workflow
+= Git Helpers - A small personal collection of scripts speeding up workflow
 
 This is a small collection of tools to help with my personal git workflow.
 
-## Installation 
+== Installation
 
-Simply copy the content of the `bin` directory into your local path e.g. 
+Simply copy the content of the `bin` directory into your local path e.g.
 `~/bin/` and ensure the they have execute permission and use them as
-outlined below. 
+outlined below.
 
+== Commands
 
-## Commands 
-
-### git fpc
+=== git fpc
 
 `FPC` stands for fetch, prune clean. It is meant to be used to be used after
 a pull request was merged. Essentially it will switch to `master` and `pull`
 the new version. Then run `fetch --prune`, gather the deleted remote branches
 and delete them locally.
 
-#### Usage 
+==== Usage
 
-```
+----
   Usage:
-    git fpc [-h]
+    git fpc [options]
 
   Opttions:
     -h | --help    This message
+    -V | --version Display version and exit
+    -b | --base    Set the default base branch
+                   Default: ''
 
   Description:
     Small script to pull master, fetch prune and delete matching local branches
     FPC stands for fetch, prune and consolidate
-```
+----
 
-### git autorebase
+=== git autorebase
 
 The `autorebase` command assumes there are multiple local branches that need
 syncronizing with `master`. It is basically a glofified loop changing into
 each branch and executing `git rebase master`.
 
-### Usage
+=== Usage
 
-```
-  Usage:"
-    git autorebase [-h] [-p]
+----
+  Usage:
+    git autorebase [options]
 
   Opttions:
     -h | --help    This message
     -p | --push    Push rebased repos to upstream
+    -V | --version Display version and exit
 
   Description:
-    Small script to pull master and rebase all branches sequentially
-```
+    Small script to pull the master/main branch and then rebase all other
+    branches sequentially to master/main.
+----
 
-### git opush
+=== git opush
 
 This is a shortcut for the command `git push origin <branch>`. Pushes every branch
 but `master`. With option `-f` does force push and `-r` removes a remote branch.
 
-#### Usage 
+==== Usage
 
-```
+----
   Usage:
-    git opush [-h] [-f] [-r]
+    git opush [options]
 
   Opttions:
     -h | --help    This message
     -f | --force   Force a push to upstream
     -r | --remove  Remove the repository from upstream
+    -V | --version Display version and exit
 
   Description:
-    Origin push to upstream without a fuss. Exludes pushes to master.
+    Origin push to upstream without a fuss. Exludes pushes to master/main.
+----
 
-```
-
-### git walktree
+=== git walktree
 
 Walktree is not really a helper. Wrote it to demonstrate how git objects are linked
 in relation to each other. Used to visualize it for a Git Course I wrote.
 
-#### Sample output
+==== Sample output
 
 The sample output below shows all objects and how they are linked together.
 This is mainly meant to teach newcomers to git how the unterbelly of the
-beast functions. 
+beast functions.
 
-```
+----
 commit HEAD
-  + tree   7527799f603140237265cec303165533152cd059  
+  + tree   7527799f603140237265cec303165533152cd059
     + blob   2f945df9add136a0922041000b2979b6c9d1e81e  .gitattributes
     + blob   1e7eabe5f1514eebf7d7abad1de726b514889871  .gitignore
     + tree   23156938ebc1c46acf68827081925e1a65427e05  App
@@ -108,29 +112,41 @@ commit HEAD
         + blob   f9016721a48ed8234d459ffe398f46d5804e11c0  Update.ps1
     + blob   6a02755f2781afb78c3af6e2a4d2e98eaa343c0e  README.md
     + blob   1d2f9cf3d374d888e2fae3b684590c2f4d293bc4  help.html
-```
+----
 
-#### Usage
+==== Usage
 
-```
+----
   Usage:
-     git walktree [-h] [<SHA1>|HEAD]
-```
+    git walktree [options] [<SHA1>|HEAD]
 
-### strip-trailing-whitespace
+  Options:
+    -h | --help     This message
+    -V | --version  Display version and exit
+
+  Description:
+    Script to show the object types of a commit. This is meant a s tool for
+    education to show the inner workings of git.
+----
+
+=== strip-trailing-whitespace
 
 Not really a git command but a helper to trim trailing white space from
 files. It also trims exessive new lines at the file end.
 
-#### Usage
+==== Usage
 
-```
-  Ussage:
-    strip-trailing-whitespace [-h|--help] <file> [<file> [..]]
+----
+  Usage:
+    strip-trailing-whitespace [options] <file> [<file> [..]]
 
+  Options:
+    -h | --help    This message
+    -V | --version Display version and exit
+
+  Description:
     strip-trailing-whitespace does exactly what the name suggests.
     Remove trailing whitepace from the each line of a text file.
     Additionally chops off exessive new lines at file end.
     Note: Not tested with binary files. Use at your own risk!
-
-```
+----
