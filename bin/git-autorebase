@@ -22,7 +22,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.4.0
+declare -r VERSION=0.5.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GLPv2"
 declare -r DIVIDER=$(printf "%0.1s" -{0..80})
@@ -43,6 +43,8 @@ function usage() {
   Opttions:
     -h | --help    This message
     -p | --push    Push rebased repos to upstream
+    -b | --base    Set the default base branch
+                   Default: 'main' or 'master'
     -V | --version Display version and exit
 
   Description:
@@ -129,7 +131,7 @@ function pull() {
 # -----------------------------------------------------------------------------
 
 function rebase_branches() {
-  local local_branches=$(git branch | grep -v ${BASE})
+  local -a local_branches=( $(git branch | grep -v ${BASE}) )
   for branch in ${local_branches[@]}; do
     echo
     echo "${DIVIDER}"

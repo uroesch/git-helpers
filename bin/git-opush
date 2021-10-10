@@ -22,7 +22,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.4.0
+declare -r VERSION=0.5.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -g FORCE=""
@@ -43,6 +43,8 @@ function usage() {
     -h | --help    This message
     -f | --force   Force a push to upstream
     -r | --remove  Remove the repository from upstream
+    -b | --base    Set the default base branch
+                   Default: 'main' or 'master'
     -V | --version Display version and exit
 
   Description:
@@ -59,6 +61,7 @@ function parse_options() {
   while [[ ${#} -gt 0 ]]; do
     case ${1} in
     -h|--help)    usage 0;;
+    -b|--base)    shift; BASE=${1};;
     -f|--force)   FORCE="true";;
     -r|--remove)  REMOVE="true";;
     -V|--version) version;;
