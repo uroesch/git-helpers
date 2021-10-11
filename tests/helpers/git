@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# This script simulates the git command for automated testing scenarios.
+# -----------------------------------------------------------------------------
+
+declare -r NAME=${0##*/}
+declare -r BIN_DIR=$(cd $(dirname ${0}); pwd)
+declare -- PATH=${PATH/${BIN_DIR}/}
+
+export PATH
+
+echo "$(date +%FT%T) -- ${NAME} ${@}" >> ${BIN_DIR}/${NAME}.log
+
+function ltrim() {
+  sed 's/^  //'
+}
+
+case "${@}" in
+'rev-parse --show-toplevel')
+  echo "/git/root"
+  ;;
+'branch')
+  printf "  %s\n" "feature" "bugfix" "main"
+  ;;
+'rev-parse --abbrev-ref HEAD')
+  echo 'bugfix'
+  ;;
+'checkout'*)
+  echo "Switched to branch '${2}'"
+  ;;
+'fetch --prune')
+  cat <<"  FETCH_PRUNE" | ltrim
+  From github.com:uroesch/git-helpers
+   - [deleted]         (none)     -> origin/feature
+  FETCH_PRUNE
+  ;;
+'branch -d feature')
+  echo "Deleted branch feature (was 092a7bb)."
+  ;;
+'rebase main')
+  echo "Successfully rebased and updated refs/heads/..."
+  ;;
+'pull'*)
+  cat <<"  PULL" | ltrim
+  remote: Counting objects: 3, done.
+  remote: Compressing objects: 100% (2/2), done.
+  remote: Total 3 (delta 0), reused 0 (delta 0)
+  Unpacking objects: 100% (3/3), done.
+  From .../remote-repo
+     45d5290..885f6c7  main     -> origin/main
+  Updating 45d5290..885f6c7
+  Fast-forward
+   second_file.txt | 1 +
+   1 file changed, 1 insertion(+)
+   create mode 100644 second_file.txt
+  PULL
+  ;;
+'push --tags')
+  printf "%s\n" \
+   "To github.com:uroesch/git-helpers" \
+   " * [new tag]         foo -> foo"
+  ;;
+'push origin '*) 
+  cat <<"  PUSH" | ltrim
+  Enumerating objects: 29, done.
+  Counting objects: 100% (29/29), done.
+  Delta compression using up to 8 threads
+  Compressing objects: 100% (21/21), done.
+  Writing objects: 100% (22/22), 3.28 KiB | 839.00 KiB/s, done.
+  Total 22 (delta 13), reused 0 (delta 0), pack-reused 0
+  Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+  remote: 
+  remote: Create a pull request for 'foobar' on GitHub by visiting:
+  remote:      https://github.com/uroesch/git-helpers/pull/new/foobar
+  remote: 
+  To github.com:uroesch/git-helpers
+   * [new branch]      foobar -> foobar
+  PUSH
+  ;;
+*) 
+  echo ${NAME} ${@}
+  ;;   
+esac
+
+
+
+
