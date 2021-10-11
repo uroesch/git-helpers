@@ -5,7 +5,7 @@
 # -----------------------------------------------------------------------------
 export PATH=${BATS_TEST_DIRNAME}/../bin:${PATH}
 export GIT_AUTOREBASE_VERSION="v0.5.0"
-export GIT_FPC_VERSION="v0.5.1"
+export GIT_FPC_VERSION="v0.5.2"
 export GIT_OPUSH_VERSION="v0.5.0"
 export GIT_WALKTREE_VERSION="v0.1.2"
 export STRIP_TRAILING_WHITESPACE_VERSION="v0.4.0"
