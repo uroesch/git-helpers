@@ -14,7 +14,7 @@ set -o pipefail
 
 # check bash version compatiblity requires 4.2 or better
 shopt -u compat41 2>/dev/null || {
-  echo -n "\nBash Version 4.2 or higher is required!\n";
+  printf "\nBash Version 4.2 or higher is required!\n";
   exit 127;
 }
 
@@ -22,11 +22,9 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION="0.5.1"
+declare -r VERSION="0.5.2"
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
-declare -g FORCE=""
-declare -g REMOVE=""
 declare -g BASE=""
 declare -x OVERCOMMIT_DISABLE=0
 
@@ -34,7 +32,7 @@ declare -x OVERCOMMIT_DISABLE=0
 # Functions
 # -----------------------------------------------------------------------------
 function usage() {
-  local exit_code=${1:-1}
+  local -i exit_code=${1:-1}
   cat <<USAGE
 
   Usage:
@@ -146,7 +144,7 @@ function fetch_prune() {
 function delete_branches() {
   local -a deleted_branches=( $(fetch_prune) )
   local -a local_branches=( $(git branch | grep -wv ${BASE}) )
-  for branch in ${deleted_branches[@]:-}; do
+  for branch in "${deleted_branches[@]:-}"; do
     if [[ ${local_branches[@]:-} =~ ${branch} ]]; then
       git branch -d ${branch}
     fi
