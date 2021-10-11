@@ -25,9 +25,9 @@ and delete them locally.
 
   Opttions:
     -h | --help    This message
-    -V | --version Display version and exit
     -b | --base    Set the default base branch
-                   Default: ''
+                   Default: 'main' or 'master'
+    -V | --version Display version and exit
 
   Description:
     Small script to pull master, fetch prune and delete matching local branches
@@ -49,6 +49,8 @@ each branch and executing `git rebase master`.
   Opttions:
     -h | --help    This message
     -p | --push    Push rebased repos to upstream
+    -b | --base    Set the default base branch
+                   Default: 'main' or 'master'
     -V | --version Display version and exit
 
   Description:
@@ -71,6 +73,8 @@ but `master`. With option `-f` does force push and `-r` removes a remote branch.
     -h | --help    This message
     -f | --force   Force a push to upstream
     -r | --remove  Remove the repository from upstream
+    -b | --base    Set the default base branch
+                   Default: 'main' or 'master'
     -V | --version Display version and exit
 
   Description:
