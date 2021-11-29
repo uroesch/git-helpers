@@ -13,12 +13,13 @@ outlined below.
 === git fpc
 
 `FPC` stands for fetch, prune clean. It is meant to be used to be used after
-a pull request was merged. Essentially it will switch to `master` and `pull`
-the new version. Then run `fetch --prune`, gather the deleted remote branches
-and delete them locally.
+a pull request was merged. Essentially it will switch to `master` or `main` and
+`pull` the new version. Then run `fetch --prune`, gather the deleted remote
+branches and delete them locally.
 
 ==== Usage
 
+[source,console]
 ----
   Usage:
     git fpc [options]
@@ -37,11 +38,12 @@ and delete them locally.
 === git autorebase
 
 The `autorebase` command assumes there are multiple local branches that need
-syncronizing with `master`. It is basically a glofified loop changing into
-each branch and executing `git rebase master`.
+syncronizing with `master` or `main`. It is basically a glofified loop changing
+into each branch and executing `git rebase (master|main)`.
 
 === Usage
 
+[source,console]
 ----
   Usage:
     git autorebase [options]
@@ -60,11 +62,13 @@ each branch and executing `git rebase master`.
 
 === git opush
 
-This is a shortcut for the command `git push origin <branch>`. Pushes every branch
-but `master`. With option `-f` does force push and `-r` removes a remote branch.
+This is a shortcut for the command `git push origin <branch>`. Pushes every
+branch but `master` or `main`. With option `-f` does force push and `-r` removes
+a remote branch.
 
 ==== Usage
 
+[source,console]
 ----
   Usage:
     git opush [options]
@@ -83,8 +87,8 @@ but `master`. With option `-f` does force push and `-r` removes a remote branch.
 
 === git walktree
 
-Walktree is not really a helper. Wrote it to demonstrate how git objects are linked
-in relation to each other. Used to visualize it for a Git Course I wrote.
+Walktree is not really a helper. Wrote it to demonstrate how git objects are
+linked in relation to each other. Used to visualize it for a Git Course I wrote.
 
 ==== Sample output
 
@@ -92,6 +96,7 @@ The sample output below shows all objects and how they are linked together.
 This is mainly meant to teach newcomers to git how the unterbelly of the
 beast functions.
 
+[source,console]
 ----
 commit HEAD
   + tree   7527799f603140237265cec303165533152cd059
@@ -120,6 +125,7 @@ commit HEAD
 
 ==== Usage
 
+[source,console]
 ----
   Usage:
     git walktree [options] [<SHA1>|HEAD]
@@ -140,6 +146,7 @@ files. It also trims exessive new lines at the file end.
 
 ==== Usage
 
+[source,console]
 ----
   Usage:
     strip-trailing-whitespace [options] <file> [<file> [..]]
@@ -154,3 +161,5 @@ files. It also trims exessive new lines at the file end.
     Additionally chops off exessive new lines at file end.
     Note: Not tested with binary files. Use at your own risk!
 ----
+
+// vim: set colorcolumn=80 textwidth=80 :
