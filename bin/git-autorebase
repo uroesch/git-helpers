@@ -22,7 +22,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.5.0
+declare -r VERSION=0.5.1
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GLPv2"
 declare -r DIVIDER=$(printf "%0.1s" -{0..80})
@@ -95,7 +95,7 @@ function which_base() {
   [[ -n ${BASE} ]] && return 0
   # prefer master over main
   local -a branches=( $(git branch | grep -oE "\<(master|main)\>" | sort -r ) )
-  BASE=${branches[0]}
+  BASE=${branches[0]:-}
 }
 
 # -----------------------------------------------------------------------------
