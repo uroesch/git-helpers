@@ -22,11 +22,12 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION="0.5.3"
+declare -r VERSION="0.6.0"
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -g BASE=""
 declare -x OVERCOMMIT_DISABLE=0
+declare -a DEFAULT_BASES=( master main )
 
 # -----------------------------------------------------------------------------
 # Functions
@@ -87,13 +88,22 @@ function git_root() {
   git rev-parse --show-toplevel
 }
 
+# -----------------------------------------------------------------------------
+
+function join_array() {
+  local -- char=${1}; shift;
+  local -a array=( "${@}" )
+  printf -v string "%s${char}" "${array[@]}"
+  echo "${string%${char}}"
+}
 
 # -----------------------------------------------------------------------------
 
 function which_base() {
   [[ -n ${BASE} ]] && return 0
   # prefer master over main
-  local -a branches=( $(git branch | grep -oE "\<(master|main)\>" | sort -r ) )
+  local pattern=$(join_array '|' "${DEFAULT_BASES[@]}")
+  local -a branches=( $(git branch | grep -oE "\<(${pattern})\>" | sort -r ) )
   BASE=${branches[0]:-}
 }
 
