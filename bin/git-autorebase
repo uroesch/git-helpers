@@ -22,7 +22,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.6.0
+declare -r VERSION=0.7.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GLPv2"
 declare -r DIVIDER=$(printf "%0.1s" -{0..80})
@@ -30,6 +30,7 @@ declare -g PUSH="false"
 declare -g BASE=""
 declare -x OVERCOMMIT_DISABLE=0
 declare -a DEFAULT_BASES=( master main )
+declare -a EXCLUDES=()
 
 # -----------------------------------------------------------------------------
 # Functions
@@ -42,11 +43,13 @@ function usage() {
     ${SCRIPT//-/ } [options]
 
   Opttions:
-    -h | --help    This message
-    -p | --push    Push rebased repos to upstream
-    -b | --base    Set the default base branch
-                   Default: 'main' or 'master'
-    -V | --version Display version and exit
+    -h | --help                This message
+    -p | --push                Push rebased repos to upstream
+    -b | --base                Set the default base branch
+                               Default: 'main' or 'master'
+    -x | --exclude <branch,..> Exclude branches from being rebased.
+                               Separate branches with commas.
+    -V | --version             Display version and exit
 
   Description:
     Small script to pull the master/main branch and then rebase all other
@@ -64,6 +67,7 @@ function parse_options() {
     -h|--help)    usage 0;;
     -b|--base)    shift; BASE=${1};;
     -p|--push)    PUSH=true;;
+    -x|--exclude) shift; EXCLUDES+=( ${1//,/ } );;
     -V|--version) version;;
     -*)           usage 1;;
     esac
@@ -143,8 +147,9 @@ function pull() {
 # -----------------------------------------------------------------------------
 
 function rebase_branches() {
-  local -a local_branches=( $(git branch | grep -v ${BASE}) )
-  for branch in ${local_branches[@]}; do
+  local -- pattern=$(join_array '|' ${EXCLUDES[@]:-} ${BASE})
+  local -a local_branches=( $(git branch | grep -Ewv "(${pattern})" ) )
+  for branch in ${local_branches[@]:-}; do
     echo
     echo "${DIVIDER}"
     git checkout ${branch}

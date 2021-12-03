@@ -4,7 +4,7 @@
 # Globals
 # -----------------------------------------------------------------------------
 export PATH=${BATS_TEST_DIRNAME}/../bin:${PATH}
-export GIT_AUTOREBASE_VERSION="v0.6.0"
+export GIT_AUTOREBASE_VERSION="v0.7.0"
 export GIT_FPC_VERSION="v0.6.0"
 export GIT_OPUSH_VERSION="v0.6.0"
 export GIT_WALKTREE_VERSION="v0.1.2"
