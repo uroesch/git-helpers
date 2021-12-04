@@ -49,11 +49,13 @@ into each branch and executing `git rebase (master|main)`.
     git autorebase [options]
 
   Opttions:
-    -h | --help    This message
-    -p | --push    Push rebased repos to upstream
-    -b | --base    Set the default base branch
-                   Default: 'main' or 'master'
-    -V | --version Display version and exit
+    -h | --help                This message
+    -p | --push                Push rebased repos to upstream
+    -b | --base                Set the default base branch
+                               Default: 'main' or 'master'
+    -x | --exclude <branch,..> Exclude branches from being rebased.
+                               Separate branches with commas.
+    -V | --version             Display version and exit
 
   Description:
     Small script to pull the master/main branch and then rebase all other
