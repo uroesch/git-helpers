@@ -1,6 +1,6 @@
-= Git Helpers - A small personal collection of scripts speeding up workflow
+= Git Helpers - A small personal script collection to aid with git workflow
 
-This is a small collection of tools to help with my personal git workflow.
+This is a small collection of tools to help with my daily personal git workflow.
 
 == Installation
 
