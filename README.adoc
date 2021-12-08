@@ -35,6 +35,17 @@ branches and delete them locally.
     FPC stands for fetch, prune and consolidate
 ----
 
+==== Customization
+In case your repo's default branch is something other than `master` or `main` you
+can add your default branch to the `DEFAULT_BASES` array. E.g to include the branch
+named `production` to the `git-fpc` script append the value to the array:
+
+[source,bash]
+----
+declare -a DEFAULT_BASES=( master main production )
+----
+
+
 === git autorebase
 
 The `autorebase` command assumes there are multiple local branches that need
@@ -62,6 +73,17 @@ into each branch and executing `git rebase (master|main)`.
     branches sequentially to master/main.
 ----
 
+==== Customization
+In case your repo's default branch is something other than `master` or `main` you
+can add your default branch to the `DEFAULT_BASES` array. E.g to include the branch
+named `production` to the `git-autorebase` script append the value to the array:
+
+[source,bash]
+----
+declare -a DEFAULT_BASES=( master main production )
+----
+
+
 === git opush
 
 This is a shortcut for the command `git push origin <branch>`. Pushes every
@@ -85,6 +107,16 @@ a remote branch.
 
   Description:
     Origin push to upstream without a fuss. Exludes pushes to master/main.
+----
+
+==== Customization
+In case your repo's default branch is something other than `master` or `main` you
+can add your default branch to the `DEFAULT_BASES` array. E.g to include the branch
+named `production` to the `git-autorebase` script append the value to the array:
+
+[source,bash]
+----
+declare -a DEFAULT_BASES=( master main production )
 ----
 
 === git walktree
