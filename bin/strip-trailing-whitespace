@@ -16,7 +16,7 @@ set -o pipefail
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0#*/}
-declare -r VERSION=0.4.0
+declare -r VERSION=0.5.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 
@@ -28,7 +28,7 @@ function usage() {
   cat << USAGE
 
   Usage:
-    ${SCRIPT} [options] <file> [<file> [..]]
+    ${SCRIPT} [options] [<file> [..]]
 
   Options:
     -h | --help    This message
@@ -37,7 +37,12 @@ function usage() {
   Description:
     strip-trailing-whitespace does exactly what the name suggests.
     Remove trailing whitepace from the each line of a text file.
-    Additionally chops off exessive new lines at file end.
+    Additionally chops off excessive new lines at file end.
+
+    When invoked without a file argument the current directory
+    is checked for git compliance and changed files in the
+    workspace or in the cache are changed.
+
     Note: Not tested with binary files. Use at your own risk!
 
 USAGE
@@ -47,7 +52,6 @@ USAGE
 # -----------------------------------------------------------------------------
 
 function parse_options() {
-  [[ ${#} -eq 0 ]] && usage 1
   while [[ ${#} -gt 0 ]]; do
     case ${1} in
     -h|--help)    usage 0;;
@@ -66,10 +70,21 @@ function version() {
   exit 0
 }
 
+
+# -----------------------------------------------------------------------------
+
+function find_git_changes() {
+  git rev-parse --is-inside-work-tree &>/dev/null || return 0
+  git diff --name-only --relative
+  git diff --cached --name-only --relative
+}
+
 # -----------------------------------------------------------------------------
 
 function remove_redundant_white_space() {
-  for file in "${@}"; do
+  local -a files=( "${@}" )
+  (( ${#files[@]} == 0 )) && files=( $(find_git_changes) )
+  for file in "${files[@]}"; do
     [[ -h ${file} ]] && continue # skip symlinks!
     if [[ -f ${file} ]]; then
       remove_trailing_white_space "${file}"

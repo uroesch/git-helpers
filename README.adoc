@@ -49,7 +49,7 @@ declare -a DEFAULT_BASES=( master main production )
 === git autorebase
 
 The `autorebase` command assumes there are multiple local branches that need
-syncronizing with `master` or `main`. It is basically a glofified loop changing
+syncronizing with `master` or `main`. It is basically a glorified loop changing
 into each branch and executing `git rebase (master|main)`.
 
 === Usage
@@ -106,7 +106,7 @@ a remote branch.
     -V | --version Display version and exit
 
   Description:
-    Origin push to upstream without a fuss. Exludes pushes to master/main.
+    Origin push to upstream without a fuss. Excludes pushes to master/main.
 ----
 
 ==== Customization
@@ -175,15 +175,21 @@ commit HEAD
 
 === strip-trailing-whitespace
 
-Not really a git command but a helper to trim trailing white space from
-files. It also trims exessive new lines at the file end.
+When called within a git workspace and without file arguments the scripts works
+on changed files both in workspace or in the cache.
+
+Invoking `strip-trailing-whitespace` with file arguments it will skip the git
+changed file detection and only work on the provided files.
+
+Besides removing any trailing white space from files it also removes trailing
+newlines from a file.
 
 ==== Usage
 
 [source,console]
 ----
   Usage:
-    strip-trailing-whitespace [options] <file> [<file> [..]]
+    strip-trailing-whitespace [options] [<file> [..]]
 
   Options:
     -h | --help    This message
@@ -192,8 +198,13 @@ files. It also trims exessive new lines at the file end.
   Description:
     strip-trailing-whitespace does exactly what the name suggests.
     Remove trailing whitepace from the each line of a text file.
-    Additionally chops off exessive new lines at file end.
+    Additionally chops off excessive new lines at file end.
+
+    When invoked without a file argument the current directory
+    is checked for git compliance and changed files in the
+    workspace or in the cache are changed.
+
     Note: Not tested with binary files. Use at your own risk!
 ----
 
-// vim: set colorcolumn=80 textwidth=80 :
+// vim: set colorcolumn=80 textwidth=80 spell :
