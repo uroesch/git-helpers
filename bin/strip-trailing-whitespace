@@ -16,7 +16,7 @@ set -o pipefail
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0#*/}
-declare -r VERSION=0.5.0
+declare -r VERSION=0.5.1
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 
@@ -84,7 +84,7 @@ function find_git_changes() {
 function remove_redundant_white_space() {
   local -a files=( "${@}" )
   (( ${#files[@]} == 0 )) && files=( $(find_git_changes) )
-  for file in "${files[@]}"; do
+  for file in "${files[@]:-}"; do
     [[ -h ${file} ]] && continue # skip symlinks!
     if [[ -f ${file} ]]; then
       remove_trailing_white_space "${file}"
