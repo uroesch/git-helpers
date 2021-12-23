@@ -36,9 +36,9 @@ branches and delete them locally.
 ----
 
 ==== Customization
-In case your repo's default branch is something other than `master` or `main` you
-can add your default branch to the `DEFAULT_BASES` array. E.g to include the branch
-named `production` to the `git-fpc` script append the value to the array:
+In case your repo's default branch is something other than `master` or `main`
+you can add your default branch to the `DEFAULT_BASES` array. E.g to include the
+branch named `production` to the `git-fpc` script append the value to the array:
 
 [source,bash]
 ----
@@ -74,9 +74,10 @@ into each branch and executing `git rebase (master|main)`.
 ----
 
 ==== Customization
-In case your repo's default branch is something other than `master` or `main` you
-can add your default branch to the `DEFAULT_BASES` array. E.g to include the branch
-named `production` to the `git-autorebase` script append the value to the array:
+In case your repo's default branch is something other than `master` or `main`
+you can add your default branch to the `DEFAULT_BASES` array. E.g to include the
+branch named `production` to the `git-autorebase` script append the value to the
+ array:
 
 [source,bash]
 ----
@@ -110,9 +111,10 @@ a remote branch.
 ----
 
 ==== Customization
-In case your repo's default branch is something other than `master` or `main` you
-can add your default branch to the `DEFAULT_BASES` array. E.g to include the branch
-named `production` to the `git-autorebase` script append the value to the array:
+In case your repo's default branch is something other than `master` or `main`
+you can add your default branch to the `DEFAULT_BASES` array. E.g to include the
+branch named `production` to the `git-autorebase` script append the value to the
+array:
 
 [source,bash]
 ----
@@ -193,6 +195,7 @@ newlines from a file.
 
   Options:
     -h | --help    This message
+    -q | --quiet   Supress output of file names.
     -V | --version Display version and exit
 
   Description:
@@ -207,4 +210,4 @@ newlines from a file.
     Note: Not tested with binary files. Use at your own risk!
 ----
 
-// vim: set colorcolumn=80 textwidth=80 spell :
+// vim: set colorcolumn=80 textwidth=80 spell spelllang=en_US :
