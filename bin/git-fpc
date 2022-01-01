@@ -22,7 +22,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION="0.6.0"
+declare -r VERSION="0.6.1"
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -g BASE=""
@@ -155,6 +155,7 @@ function delete_branches() {
   local -a deleted_branches=( $(fetch_prune) )
   local -a local_branches=( $(git branch | grep -wv ${BASE}) )
   for branch in "${deleted_branches[@]:-}"; do
+    [[ -z ${branch} ]] && continue
     if [[ ${local_branches[@]:-} =~ ${branch} ]]; then
       git branch -d ${branch}
     fi
