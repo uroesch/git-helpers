@@ -22,7 +22,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.7.0
+declare -r VERSION=0.7.1
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GLPv2"
 declare -r DIVIDER=$(printf "%0.1s" -{0..80})
@@ -40,7 +40,7 @@ function usage() {
   cat <<USAGE
 
   Usage:
-    ${SCRIPT//-/ } [options]
+    ${SCRIPT/-/ } [options]
 
   Opttions:
     -h | --help                This message
@@ -79,7 +79,7 @@ function parse_options() {
 
 function version() {
   printf "%s v%s\nCopyright (c) %s\nLicense - %s\n" \
-    "${SCRIPT}" "${VERSION}" "${AUTHOR}" "${LICENSE}"
+    "${SCRIPT/-/ }" "${VERSION}" "${AUTHOR}" "${LICENSE}"
   exit 0
 }
 
