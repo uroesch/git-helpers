@@ -111,6 +111,7 @@ a remote branch.
 ----
 
 ==== Customization
+
 In case your repo's default branch is something other than `master` or `main`
 you can add your default branch to the `DEFAULT_BASES` array. E.g to include the
 branch named `production` to the `git-autorebase` script append the value to the
@@ -119,6 +120,34 @@ array:
 [source,bash]
 ----
 declare -a DEFAULT_BASES=( master main production )
+----
+
+=== git stale-branches
+
+List the stale branches as a list showing the date in ISO format followed by
+the branch name. The default time threshold is set to 5 weeks. 
+
+==== Usage
+
+[source,console]
+----
+  Usage:
+    git stale branches [options]
+
+  Opttions:
+    -h | --help                This message
+    -t | --threshold <string>  Human readable string like "1 day ago" 
+    -V | --version             Display version and exit
+----
+
+==== Example output
+
+[source,bash]
+----
+
+Last Commit          Branch name
+-------------------  -----------------------------------------------------------
+2022-03-29 14:53:19  main
 ----
 
 === git walktree

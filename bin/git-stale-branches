@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Display branches that are considered stale (e.g. 5 weeks old)
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# check bash version compatiblity requires 4.2 or better
+shopt -u compat41 2>/dev/null || {
+  echo -n "\nBash Version 4.2 or higher is required!\n";
+  exit 127;
+}
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+declare -r SCRIPT=${0##*/}
+declare -r VERSION=0.1.0
+declare -r AUTHOR="Urs Roesch <github@bun.ch>"
+declare -r LICENSE="GPLv2"
+declare -r THRESHOLD_DEFAULT='5 weeks ago'
+declare -i THRESHOLD=$(date -d "${THRESHOLD_DEFAULT}" +%s)
+declare -a HEADER=( "Last Commit" "Branch name" )
+declare -r FORMAT="%-20s %s\n"
+declare -g PER_WEEK="false"
+declare -a BRANCHES=( )
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function usage() {
+  local exit_code=${1:-1}
+  cat <<USAGE
+
+  Usage:
+    ${SCRIPT//-/ } [options]
+
+  Opttions:
+    -h | --help                This message
+    -t | --threshold <string>  Human readable string like "1 day ago" 
+    -V | --version             Display version and exit
+
+USAGE
+
+  exit ${exit_code}
+}
+
+# -----------------------------------------------------------------------------
+
+function parse_options() {
+  while [[ ${#} -gt 0 ]]; do
+    case ${1} in
+    -h|--help)      usage 0;;
+    -t|--threshold) shift; THRESHOLD=$(date -d "${1}" +%s);;
+    -V|--version) version;;
+    -*)           usage 1;;
+    esac
+    shift
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function version() {
+  printf "%s v%s\nCopyright (c) %s\nLicense - %s\n" \
+    "${SCRIPT/-/ }" "${VERSION}" "${AUTHOR}" "${LICENSE}"
+  exit 0
+}
+
+# -----------------------------------------------------------------------------
+
+function git_branches() {
+  git branch \
+    -r \
+    --sort=committerdate \
+    --format="%(refname:lstrip=3) %(committerdate:unix)"
+}
+
+# -----------------------------------------------------------------------------
+
+function filter_stale_branches() {
+  local threshold=${1}; shift;
+  git_branches | while read branch epoch; do
+    (( ${threshold} < ${epoch} )) && continue;
+    printf " %b " "${epoch}" "${branch}"
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function print_branch_info() {
+  local header="${1:-true}"; shift;
+  local -a branches=( "${@}" );
+  if [[ ${header} == true ]]; then
+    printf "${FORMAT}" "${HEADER[@]}"
+  fi  
+  printf "${FORMAT}" $(printf "%0.1s" -{0..18}) $(printf "%0.1s" -{0..58}) 
+  printf "%(%F %T)T  %s\n" "${branches[@]}"
+  printf "\n" 
+}
+
+# -----------------------------------------------------------------------------
+
+function print_stale_branches() {
+  read -a branches <<< $(filter_stale_branches ${THRESHOLD})
+  if (( ${#branches[@]} == 0 )); then
+    printf "\nNo stale branch found\n"
+    return 0;
+  fi
+  printf "\n"
+  print_branch_info true "${branches[@]}"
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+parse_options "${@}"
+print_stale_branches
