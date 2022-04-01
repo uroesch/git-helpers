@@ -136,19 +136,40 @@ the branch name. The default time threshold is set to 5 weeks.
 
   Opttions:
     -h | --help                This message
-    -t | --threshold <string>  Human readable string like "1 day ago" 
+    -t | --threshold <string>  Human readable string like "1 day ago"
+    -p | --per-week            Create a list of stale branches divided by week.
     -V | --version             Display version and exit
 ----
 
 ==== Example output
 
-[source,bash]
+.Display braches older than 5 weeks
+[source,console]
 ----
+$ git stale-branches
 
 Last Commit          Branch name
 -------------------  -----------------------------------------------------------
 2022-03-29 14:53:19  main
 ----
+
+
+.Per week view
+[source,console]
+----
+$ git stale-branches -p
+
+14 weeks ago
+------------------- ------------------------------------------------------------
+2021-12-29 16:15:13  experimental/ocrpdf
+2021-12-29 16:19:50  packaging/debian
+
+10 weeks ago
+------------------- ------------------------------------------------------------
+2022-01-26 23:03:29  main
+2022-01-26 23:25:07  feature/scan2pdf
+----
+
 
 === git walktree
 

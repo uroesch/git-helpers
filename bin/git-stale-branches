@@ -29,6 +29,7 @@ declare -i THRESHOLD=$(date -d "${THRESHOLD_DEFAULT}" +%s)
 declare -a HEADER=( "Last Commit" "Branch name" )
 declare -r FORMAT="%-20s %s\n"
 declare -g PER_WEEK="false"
+declare -g WEEK_COUNT=52
 declare -a BRANCHES=( )
 
 # -----------------------------------------------------------------------------
@@ -43,7 +44,8 @@ function usage() {
 
   Opttions:
     -h | --help                This message
-    -t | --threshold <string>  Human readable string like "1 day ago" 
+    -t | --threshold <string>  Human readable string like "1 day ago"
+    -p | --per-week            Create a list of stale branches divided by week.
     -V | --version             Display version and exit
 
 USAGE
@@ -58,6 +60,7 @@ function parse_options() {
     case ${1} in
     -h|--help)      usage 0;;
     -t|--threshold) shift; THRESHOLD=$(date -d "${1}" +%s);;
+    -p|--per-week)  PER_WEEK="true";;
     -V|--version) version;;
     -*)           usage 1;;
     esac
@@ -79,15 +82,35 @@ function git_branches() {
   git branch \
     -r \
     --sort=committerdate \
-    --format="%(refname:lstrip=3) %(committerdate:unix)"
+    --format="%(refname:lstrip=3) %(committerdate:unix)" \
+    2>/dev/null
+}
+
+# -----------------------------------------------------------------------------
+
+function list_per_week() {
+  [[ ${PER_WEEK} == false ]] && return 0
+  local -i counter=${WEEK_COUNT}
+  printf "\n"
+  while (( ${counter} > 0 )); do
+    week_start=$(date -d "${counter} weeks ago" +%s)
+    read -a branches <<< $(filter_stale_branches ${week_start})
+    if (( ${#branches[@]} > 0 )); then
+      printf "%d weeks ago\n" ${counter}
+      print_branch_info false "${branches[@]}"
+    fi
+    (( counter-- ))
+  done
+  exit
 }
 
 # -----------------------------------------------------------------------------
 
 function filter_stale_branches() {
-  local threshold=${1}; shift;
+  local week_start=${1}; shift;
+  local week_end=$(( week_start + 7 * 24 * 60 * 60 ))
   git_branches | while read branch epoch; do
-    (( ${threshold} < ${epoch} )) && continue;
+    (( ${week_end} < ${epoch} || ${week_start} > ${epoch} )) && continue;
     printf " %b " "${epoch}" "${branch}"
   done
 }
@@ -99,10 +122,10 @@ function print_branch_info() {
   local -a branches=( "${@}" );
   if [[ ${header} == true ]]; then
     printf "${FORMAT}" "${HEADER[@]}"
-  fi  
-  printf "${FORMAT}" $(printf "%0.1s" -{0..18}) $(printf "%0.1s" -{0..58}) 
+  fi
+  printf "${FORMAT}" $(printf "%0.1s" -{0..18}) $(printf "%0.1s" -{0..58})
   printf "%(%F %T)T  %s\n" "${branches[@]}"
-  printf "\n" 
+  printf "\n"
 }
 
 # -----------------------------------------------------------------------------
@@ -117,8 +140,10 @@ function print_stale_branches() {
   print_branch_info true "${branches[@]}"
 }
 
+
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
 parse_options "${@}"
+list_per_week
 print_stale_branches
