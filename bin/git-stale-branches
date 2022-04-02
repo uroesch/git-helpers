@@ -21,7 +21,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.1.0
+declare -r VERSION=0.3.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -r THRESHOLD_DEFAULT='5 weeks ago'
@@ -94,7 +94,8 @@ function list_per_week() {
   printf "\n"
   while (( ${counter} > 0 )); do
     week_start=$(date -d "${counter} weeks ago" +%s)
-    read -a branches <<< $(filter_stale_branches ${week_start})
+    week_end=$(( week_start + 24 * 7 * 60 * 60 ))
+    read -a branches <<< $(filter_stale_branches ${week_start} ${week_end})
     if (( ${#branches[@]} > 0 )); then
       printf "%d weeks ago\n" ${counter}
       print_branch_info false "${branches[@]}"
@@ -108,9 +109,13 @@ function list_per_week() {
 
 function filter_stale_branches() {
   local week_start=${1}; shift;
-  local week_end=$(( week_start + 7 * 24 * 60 * 60 ))
+  local week_end=${1}; shift;
   git_branches | while read branch epoch; do
-    (( ${week_end} < ${epoch} || ${week_start} > ${epoch} )) && continue;
+    if (( ${week_end} == 0 )); then
+      (( ${week_start} < ${epoch} )) && continue;
+    else
+      (( ${week_end} < ${epoch} || ${week_start} > ${epoch} )) && continue;
+    fi
     printf " %b " "${epoch}" "${branch}"
   done
 }
@@ -131,7 +136,7 @@ function print_branch_info() {
 # -----------------------------------------------------------------------------
 
 function print_stale_branches() {
-  read -a branches <<< $(filter_stale_branches ${THRESHOLD})
+  read -a branches <<< $(filter_stale_branches ${THRESHOLD} 0)
   if (( ${#branches[@]} == 0 )); then
     printf "\nNo stale branch found\n"
     return 0;
