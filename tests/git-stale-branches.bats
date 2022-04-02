@@ -27,3 +27,26 @@ load helpers
     grep -w ${GIT_STALE_BRANCHES_VERSION}
 }
 
+@test "git stale-branches: Default operation" {
+  output=$(git-stale-branches) 
+  grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
+  grep "2021-12-29 15:19:50  packaging/debian"    <<< "${output}"
+  grep "2022-01-26 22:03:29  main"                <<< "${output}"
+  grep "2022-01-26 22:25:07  feature/scan2pdf"    <<< "${output}"
+}
+
+@test "git stale-branches: Threshold 2 weeks ago" {
+  output=$(git-stale-branches --threshold '2 weeks ago')
+  grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
+  grep "2021-12-29 15:19:50  packaging/debian"    <<< "${output}"
+  grep "2022-01-26 22:03:29  main"                <<< "${output}"
+  grep "2022-01-26 22:25:07  feature/scan2pdf"    <<< "${output}"
+}
+
+@test "git stale-branches: Per week" {
+  output=$(git-stale-branches --per-week)
+  grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
+  grep "2021-12-29 15:19:50  packaging/debian"    <<< "${output}"
+  grep "2022-01-26 22:03:29  main"                <<< "${output}"
+  grep "2022-01-26 22:25:07  feature/scan2pdf"    <<< "${output}"
+}

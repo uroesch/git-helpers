@@ -40,7 +40,12 @@ jobs:
       shell: bash
       run: |
         function install-dependencies() {
-          apk add git make grep bats
+          apk add \
+            bats \
+            coreutils \
+            git \
+            grep \
+            make
         }
         docker run \
           --tty \
