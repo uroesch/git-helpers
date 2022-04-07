@@ -80,6 +80,7 @@ case "${@}" in
   ;;
 'branch -r --sort=committerdate --format=%(refname:lstrip=3) %(committerdate:unix)')
   cat <<"  BRANCH" | ltrim
+  veryold-branch 1540790913
   experimental/ocrpdf 1640790913
   packaging/debian 1640791190
   main 1643234609

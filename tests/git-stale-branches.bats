@@ -45,6 +45,8 @@ load helpers
 
 @test "git stale-branches: Per week" {
   output=$(git-stale-branches --per-week)
+  grep "2018-10-29 05:28:33  veryold-branch"      <<< "${output}"
+  grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
   grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
   grep "2021-12-29 15:19:50  packaging/debian"    <<< "${output}"
   grep "2022-01-26 22:03:29  main"                <<< "${output}"
