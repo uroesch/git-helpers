@@ -21,7 +21,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.3.0
+declare -r VERSION=0.4.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -r THRESHOLD_DEFAULT='5 weeks ago'
@@ -88,18 +88,35 @@ function git_branches() {
 
 # -----------------------------------------------------------------------------
 
+function print_per_week() {
+  local -- message=${1}; shift;
+  local -a branches=( "${@}" );
+  if (( ${#branches[@]} > 0 )); then
+    printf "%s\n" "${message}"
+    print_branch_info false "${branches[@]}"
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function list_per_week_threshold() {
+  local week_start=$(date -d "${WEEK_COUNT} weeks ago" +%s)
+  read -a branches <<< $(filter_stale_branches ${week_start} 0)
+  print_per_week "older than ${WEEK_COUNT} weeks" "${branches[@:-]}"
+}
+
+# -----------------------------------------------------------------------------
+
 function list_per_week() {
   [[ ${PER_WEEK} == false ]] && return 0
   local -i counter=${WEEK_COUNT}
   printf "\n"
+  list_per_week_threshold
   while (( ${counter} > 0 )); do
     week_start=$(date -d "${counter} weeks ago" +%s)
     week_end=$(( week_start + 24 * 7 * 60 * 60 ))
     read -a branches <<< $(filter_stale_branches ${week_start} ${week_end})
-    if (( ${#branches[@]} > 0 )); then
-      printf "%d weeks ago\n" ${counter}
-      print_branch_info false "${branches[@]}"
-    fi
+    print_per_week "${counter} weeks old" "${branches[@:-]}"
     (( counter-- ))
   done
   exit

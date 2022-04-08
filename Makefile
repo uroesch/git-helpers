@@ -22,7 +22,7 @@ user_install:
 	mkdir -p $(USER_BIN) || :
 	for script in bin/*; do
 		basename=$${script##*/}
-		install $${script} $(USER_BIN)/$${basename} && 
+		install $${script} $(USER_BIN)/$${basename} &&
 			echo "-> Installing $${script} to $(USER_BIN)/$${basename}"
 	done
 
@@ -31,7 +31,7 @@ user_uninstall:
 	for script in bin/*; do
 		basename=$${script##*/}
 		if [[ -f $(USER_BIN)/$${basename} ]]; then
-			rm $(USER_BIN)/$${basename} && 
+			rm $(USER_BIN)/$${basename} &&
 			echo "-> Unstalling $(USER_BIN)/$${basename}"
 		fi
 	done
@@ -43,7 +43,8 @@ test:
 	bats tests/*.bats
 
 test-bash:
-	declare -a VERSIONS=( 4.2 4.3 4.4 5.0 5.1 )
+	@echo "Bash tests"
+	declare -a VERSIONS=( 4.2 4.3 4.4 5.0 5.1 5.2-rc );
 	function  install() {
 		apk add \
 		  bats \
@@ -51,15 +52,16 @@ test-bash:
 			git \
 			grep \
 			make; \
-	}; \
-	for version in $${VERSIONS[@]}; do \
+	};
+	for version in $${VERSIONS[@]}; do
+		@echo "Test bash version $${version}"
 		docker run \
 			--rm \
 			--tty \
 			--volume $$(pwd):/git-helpers \
 			--workdir /git-helpers \
 			bash:$${version} \
-			bash -c "$$(declare -f install); install && make test"; \
-	done;
+			bash -c "$$(declare -f install); install &>/dev/nul && make test";
+	done
 
 # vim: shiftwidth=2 noexpandtab :
