@@ -52,3 +52,10 @@ load helpers
   grep "2022-01-26 22:03:29  main"                <<< "${output}"
   grep "2022-01-26 22:25:07  feature/scan2pdf"    <<< "${output}"
 }
+
+@test "git stale-branches: Per week - no 70s" {
+  output=$(git-stale-branches --per-week)
+  count=$(grep -c "1970-01-01 00:00:00 " <<< "${output}" || :)
+  echo $count
+  (( ${count} == 0 ))
+}

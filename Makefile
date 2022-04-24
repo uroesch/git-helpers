@@ -12,7 +12,7 @@ BASH_VERSION += 4.2
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
-USER_BIN   := $(HOME)/bin
+USER_BIN := $(HOME)/bin
 
 # -----------------------------------------------------------------------------
 # User install
@@ -45,13 +45,14 @@ test:
 test-bash:
 	@echo "Bash tests"
 	declare -a VERSIONS=( 4.2 4.3 4.4 5.0 5.1 5.2-rc );
-	function  install() {
+	function  setup() {
 		apk add \
-		  bats \
+			bats \
 			coreutils \
 			git \
 			grep \
 			make; \
+			git config --global --add safe.directory /git-helpers; \
 	};
 	for version in $${VERSIONS[@]}; do
 		@echo "Test bash version $${version}"
@@ -61,7 +62,7 @@ test-bash:
 			--volume $$(pwd):/git-helpers \
 			--workdir /git-helpers \
 			bash:$${version} \
-			bash -c "$$(declare -f install); install &>/dev/nul && make test";
+			bash -c "$$(declare -f setup); setup &>/dev/null && make test";
 	done
 
 # vim: shiftwidth=2 noexpandtab :
