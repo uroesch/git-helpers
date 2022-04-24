@@ -39,17 +39,18 @@ jobs:
     - name: Loop test
       shell: bash
       run: |
-        function install-dependencies() {
+        function setup() {
           apk add \
             bats \
             coreutils \
             git \
             grep \
-            make
+            make;
+            git config --global --add safe.directory /git-helpers;
         }
         docker run \
           --tty \
           --volume $(pwd):/git-helpers \
           --workdir /git-helpers \
           bash:${{ matrix.bash }} \
-          bash -c "$(declare -f install-dependencies); install-dependencies && make test && echo \${BASH_VERSION}"
+          bash -c "$(declare -f setup); setup && make test && echo \${BASH_VERSION}"
