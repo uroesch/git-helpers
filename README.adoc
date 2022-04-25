@@ -122,6 +122,37 @@ array:
 declare -a DEFAULT_BASES=( master main production )
 ----
 
+=== git rank
+
+A tiny helper to show the how many commits each commiter has made based on 
+`git shortlog`
+
+==== Usage
+
+[source,console]
+----
+  Usage:
+    git rank [options]
+
+  Opttions:
+    -h | --help    This message
+    -V | --version Display version and exit
+
+  Description:
+    Script to show a ranking based on git shortlog.
+----
+
+==== Example output
+
+.Show git ranking
+[source,console]
+----
+$ git rank
+42  Road Runner
+33  Wiley E. Coyote
+21  Harry Potter
+----
+
 === git stale-branches
 
 List the stale branches as a list showing the date in ISO format followed by

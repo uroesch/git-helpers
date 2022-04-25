@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Small script to show a ranking based on the shortlog git command.
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# check bash version compatiblity requires 4.2 or better
+shopt -u compat41 2>/dev/null || {
+  printf "\nBash Version 4.2 or higher is required!\n";
+  exit 127;
+}
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+declare -r SCRIPT=${0##*/}
+declare -r VERSION="0.1.0"
+declare -r AUTHOR="Urs Roesch <github@bun.ch>"
+declare -r LICENSE="GPLv2"
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function usage() {
+  local -i exit_code=${1:-1}
+  cat <<USAGE
+
+  Usage:
+    ${SCRIPT/-/ } [options]
+
+  Opttions:
+    -h | --help    This message
+    -V | --version Display version and exit
+
+  Description:
+    Script to show a ranking based on git shortlog.
+
+USAGE
+
+  exit ${exit_code}
+}
+
+# -----------------------------------------------------------------------------
+
+function parse_options() {
+  while [[ ${#} -gt 0 ]]; do
+    case ${1} in
+    -h|--help)    usage 0;;
+    -V|--version) version;;
+    -*)           usage 1;;
+    esac
+    shift
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function version() {
+  printf "%s v%s\nCopyright (c) %s\nLicense - %s\n" \
+    "${SCRIPT/-/ }" "${VERSION}" "${AUTHOR}" "${LICENSE}"
+  exit 0
+}
+
+# -----------------------------------------------------------------------------
+
+function git_root() {
+  git rev-parse --show-toplevel
+}
+
+# -----------------------------------------------------------------------------
+
+function show_ranking() {
+  git_root &>/dev/null &&
+  git shortlog | \
+    sed -r \
+      -e '/^[A-Za-z0-9]/!d' \
+      -e 's/^(.*) \(([0-9]*)\):/\2\t\1/g' | \
+    sort -rn | \
+    column -t -s $'\t'
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+parse_options "${@}"
+show_ranking
