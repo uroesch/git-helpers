@@ -51,7 +51,8 @@ test-bash:
 			coreutils \
 			git \
 			grep \
-			make; \
+			make \
+			util-linux; \
 			git config --global --add safe.directory /git-helpers; \
 	};
 	for version in $${VERSIONS[@]}; do
