@@ -45,8 +45,7 @@ jobs:
             coreutils \
             git \
             grep \
-            make \
-            util-linux; \
+            make;
             git config --global --add safe.directory /git-helpers;
         }
         docker run \
