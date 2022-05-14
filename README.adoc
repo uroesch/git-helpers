@@ -179,9 +179,10 @@ the branch name. The default time threshold is set to 5 weeks.
 ----
 $ git stale-branches
 
-Last Commit          Branch name
--------------------  -----------------------------------------------------------
-2022-03-29 14:53:19  main
+Last Commit          Committer             Branch name
+-------------------  -------------------- -------------------------------------
+2022-05-19 23:22:41  Wiley E. Coyote      bugfix/stackoverflow
+
 ----
 
 

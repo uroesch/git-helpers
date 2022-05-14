@@ -21,13 +21,13 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.4.1
+declare -r VERSION=0.5.0
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -r THRESHOLD_DEFAULT='5 weeks ago'
 declare -i THRESHOLD=$(date -d "${THRESHOLD_DEFAULT}" +%s)
-declare -a HEADER=( "Last Commit" "Branch name" )
-declare -r FORMAT="%-20s %s\n"
+declare -a HEADER=( "Last Commit" "Committer" "Branch name" )
+declare -r FORMAT="%-19s  %-20s  %s\n"
 declare -g PER_WEEK="false"
 declare -g WEEK_COUNT=52
 declare -a BRANCHES=( )
@@ -61,8 +61,8 @@ function parse_options() {
     -h|--help)      usage 0;;
     -t|--threshold) shift; THRESHOLD=$(date -d "${1}" +%s);;
     -p|--per-week)  PER_WEEK="true";;
-    -V|--version) version;;
-    -*)           usage 1;;
+    -V|--version)   version;;
+    -*)             usage 1;;
     esac
     shift
   done
@@ -82,7 +82,7 @@ function git_branches() {
   git branch \
     -r \
     --sort=committerdate \
-    --format="%(refname:lstrip=3) %(committerdate:unix)" \
+    --format="%(refname:lstrip=3)%09%(committername)%09%(committerdate:unix)" \
     2>/dev/null
 }
 
@@ -90,9 +90,10 @@ function git_branches() {
 
 function print_per_week() {
   local -- message=${1}; shift;
-  local -a branches=( ${@} );
+  local -a branches=( "${@}" );
   if (( ${#branches[@]} > 0 )); then
-    printf "%s\n" "${message}"
+    [[ ${branches} == '' ]] && return
+    printf "${FORMAT}" "${message}"
     print_branch_info false "${branches[@]}"
   fi
 }
@@ -127,13 +128,15 @@ function list_per_week() {
 function filter_stale_branches() {
   local week_start=${1}; shift;
   local week_end=${1}; shift;
-  git_branches | while read branch epoch; do
+  readarray branches <<< "$(git_branches)"
+  for branch in "${branches[@]}"; do
+    IFS=$'\t' read branch name epoch <<< "${branch}"
     if (( ${week_end} == 0 )); then
       (( ${week_start} < ${epoch} )) && continue;
     else
       (( ${week_end} < ${epoch} || ${week_start} > ${epoch} )) && continue;
     fi
-    printf " %b " "${epoch}" "${branch}"
+    printf " %q " "${epoch}" "${name}" "${branch}"
   done
 }
 
@@ -145,8 +148,11 @@ function print_branch_info() {
   if [[ ${header} == true ]]; then
     printf "${FORMAT}" "${HEADER[@]}"
   fi
-  printf "${FORMAT}" $(printf "%0.1s" -{0..18}) $(printf "%0.1s" -{0..58})
-  printf "%(%F %T)T  %s\n" "${branches[@]}"
+  printf "${FORMAT}" \
+    $(printf "%0.1s" -{0..18}) \
+    $(printf "%0.1s" -{0..19}) \
+    $(printf "%0.1s" -{0..44})
+  printf "%(%F %T)T  %-20s  %s\n" "${branches[@]}"
   printf "\n"
 }
 
