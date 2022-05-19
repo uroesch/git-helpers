@@ -16,6 +16,18 @@ function ltrim() {
   sed 's/^  //'
 }
 
+function worklog_base() {
+  printf "%s\n" \
+    $'0000000\t2022-01-06 22:34:56\tRoadrunner\tFirst draft git worklog' \
+    $'9999999\t2022-01-05 01:02:03\tRoadrunner\tgit-rank: Remove column command' \
+    $'8888888\t2022-01-04 02:22:34\tRoadrunner\tgit rank: New script to show commiter rank' \
+    $'7777777\t2022-01-02 20:12:34\tWiley E. Coyote\tgit crank: Handle it better' \
+    $'6666666\t2021-12-23 21:34:24\tRoadrunner\tgit sudo: Run as root.' \
+    $'5555555\t2021-12-21 22:32:12\tWiley E. Coyote\tgit branch-branch: Like a tree.' \
+    $'4444444\t2021-12-20 10:00:21\tRoadrunner\tgit fakeentry: Fake commit.' \
+    $'3333333\t2021-12-19 12:01:21\tRoadrunner\tgit sample: test commit'
+}
+
 case "${@}" in
 'rev-parse --show-toplevel')
   echo "/git/root"
@@ -61,7 +73,7 @@ case "${@}" in
    "To github.com:uroesch/git-helpers" \
    " * [new tag]         foo -> foo"
   ;;
-'push origin '*) 
+'push origin '*)
   cat <<"  PUSH" | ltrim
   Enumerating objects: 29, done.
   Counting objects: 100% (29/29), done.
@@ -70,10 +82,10 @@ case "${@}" in
   Writing objects: 100% (22/22), 3.28 KiB | 839.00 KiB/s, done.
   Total 22 (delta 13), reused 0 (delta 0), pack-reused 0
   Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
-  remote: 
+  remote:
   remote: Create a pull request for 'foobar' on GitHub by visiting:
   remote:      https://github.com/uroesch/git-helpers/pull/new/foobar
-  remote: 
+  remote:
   To github.com:uroesch/git-helpers
    * [new branch]      foobar -> foobar
   PUSH
@@ -93,33 +105,44 @@ case "${@}" in
         Initial Release
         Makefile: Add user_install
         Merge pull request #1 from uroesch/feature/makefile
-  
+
   Harry Potter (21):
         Merge pull request #7 from uroesch/gh/add-main
         Add inital simple bats tests
         Workflow: Add tests for strip-trailing-whitespace
         Workflow: Add git walktree basic tests
         Workflow: Add a check for walktree output
-  
+
   Road Runner (42):
         README: Change title wording and intro
         README: Add customization instructions
         Add stale-branch checker
-  
+
   Wiley E. Coyote (33):
         git stale-branches: Add per week view
         git stale-branches: Fix default operation mode
         git stale-branches: Add older than 52 weeks to per week.
         git stale-branches: Bug fix for empty per week view
-  
+
   github-actions[bot] (11):
         Merge pull request #8 from uroesch/workflow/simple-tests
         Merge pull request #9 from uroesch/workflow/stw
         Merge pull request #10 from uroesch/workflow/walktree
   SHORTLOG
   ;;
-*) 
+'config user.name')
+  echo 'Roadrunner'
+  ;;
+'log --date=format:%F %T --pretty=format:%h%x09%ad%x09%an%x09%s --since=1514546715 --author=Roadrunner')
+  worklog_base | grep Roadrunner | head -n 3
+  ;;
+'log --date=format:%F %T --pretty=format:%h%x09%ad%x09%an%x09%s --since=1483701915 --author=Roadrunner')
+  worklog_base | grep Roadrunner
+  ;;
+'log --date=format:%F %T --pretty=format:%h%x09%ad%x09%an%x09%s --since=1514546715 --author=Wiley E. Coyote')
+  worklog_base | grep 'Wiley E. Coyote'
+  ;;
+*)
   echo ${NAME} ${@}
-  ;;   
+  ;;
 esac
-
