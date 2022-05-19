@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+# -----------------------------------------------------------------------------
+# Small script to summarize the work done in the last number of days, weeks...
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# check bash version compatiblity requires 4.2 or better
+shopt -u compat41 2>/dev/null || {
+  printf "\nBash Version 4.2 or higher is required!\n";
+  exit 127;
+}
+
+# -----------------------------------------------------------------------------
+# Globals
+# -----------------------------------------------------------------------------
+declare -r SCRIPT=${0##*/}
+declare -r VERSION="0.1.0"
+declare -r AUTHOR="Urs Roesch <github@bun.ch>"
+declare -r LICENSE="GPLv2"
+declare -i TIMESTAMP=$(date +%s)
+declare -g GIT_AUTHOR=
+declare -g GIT_SINCE=
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function usage() {
+  local -i exit_code=${1:-1}
+  cat <<USAGE
+
+  Usage:
+    ${SCRIPT/-/ } [options]
+
+  Opttions:
+    -h | --help           This message
+    -a | --author <name>  Set the author's name as commit filter.
+                          Default: Current user as specfied in git config.
+    -d | --day            Show commits for last 24 hours of author.
+    -D | --days <N>       Show commits for the number of days specified.
+    -w | --week           Show commits for week of author.
+    -W | --weeks <N>      Show commits for the number of weeks specified.
+    -V | --version        Display version and exit
+
+  Description:
+    Show a tabular list of commits with the short hash, the author and the
+    subject. Unless specified the default ist to show one week worth of the
+    commit log for the current user.
+
+USAGE
+
+  exit ${exit_code}
+}
+
+# -----------------------------------------------------------------------------
+
+function parse_options() {
+  while [[ ${#} -gt 0 ]]; do
+    case ${1} in
+    -h|--help)    usage 0;;
+    -a|--author)  shift; GIT_AUTHOR=${1};;
+    -d|--day)     GIT_SINCE=$(calculate_duration 1 day);;
+    -D|--days)    shift; GIT_SINCE=$(calculate_duration ${1} day);;
+    -w|--week)    GIT_SINCE=$(calculate_duration 1 week);;
+    -W|--weeks)   shift; GIT_SINCE=$(calculate_duration ${1} week);;
+    -V|--version) version;;
+    -*)           usage 1;;
+    esac
+    shift
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function version() {
+  printf "%s v%s\nCopyright (c) %s\nLicense - %s\n" \
+    "${SCRIPT/-/ }" "${VERSION}" "${AUTHOR}" "${LICENSE}"
+  exit 0
+}
+
+# -----------------------------------------------------------------------------
+
+function git_root() {
+  git rev-parse --show-toplevel
+}
+
+# -----------------------------------------------------------------------------
+
+function calculate_duration() {
+  local -i value=${1}; shift;
+  local -- unit=${1}; shift;
+
+  case ${unit} in
+  day*)  echo $(( TIMESTAMP - (value * (24 * 60 * 60)) ));;
+  week*) echo $(( TIMESTAMP - (value * (7 * 24 * 60 * 60)) ));;
+  esac
+}
+
+# -----------------------------------------------------------------------------
+
+function line() {
+  local -i length=${1}+1;
+  printf "%0.1s" $(seq -${length} -1)
+}
+
+# -----------------------------------------------------------------------------
+
+function git_user() {
+  git config user.name
+}
+
+# -----------------------------------------------------------------------------
+
+function filter_logs() {
+  local since=${GIT_SINCE:-$(calculate_duration 1 week)}
+  local author=${GIT_AUTHOR:-$(git_user)}
+  git log \
+    --date="format:%F %T" \
+    --pretty="format:%h%x09%ad%x09%an%x09%s" \
+    --since="${since}" \
+    --author="${author}"
+}
+
+# -----------------------------------------------------------------------------
+
+function display_logs() {
+  local format="%-8s %-19s %-20s %s\n"
+  readarray logs <<< $(filter_logs)
+  (( ${#logs[@]} == 0 )) && printf "%s\n" "" "No commits found" ""
+
+  printf "${format}" "Hash" "Timestamp" "Committer" "Subject"
+  printf "${format}" $(line 7) $(line 18) $(line 19) $(line 52)
+  for log in "${logs[@]}"; do
+    IFS=$'\t' read hash timestamp name subject <<< ${log}
+    printf "${format}" "${hash}" "${timestamp}" "${name}" "${subject}"
+  done
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+parse_options "${@}"
+display_logs

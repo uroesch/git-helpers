@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# This script simulates the date command for automated testing scenarios.
+# -----------------------------------------------------------------------------
+
+declare -r NAME=${0##*/}
+declare -r BIN_DIR=$(cd $(dirname ${0}); pwd)
+declare -- PATH=${PATH/${BIN_DIR}/}
+
+export PATH
+
+echo "$(date +%FT%T) -- ${NAME} ${@}" >> ${BIN_DIR}/${NAME}.log
+
+function ltrim() {
+  sed 's/^  //'
+}
+
+case "${@}" in
+'+%s')
+  echo "1515151515"
+  ;;
+*)
+  command ${NAME} "${@}" 
+  ;;   
+esac
+
