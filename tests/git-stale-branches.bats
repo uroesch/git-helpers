@@ -29,28 +29,29 @@ load helpers
 
 @test "git stale-branches: Default operation" {
   output=$(git-stale-branches) 
-  grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
-  grep "2021-12-29 15:19:50  packaging/debian"    <<< "${output}"
-  grep "2022-01-26 22:03:29  main"                <<< "${output}"
-  grep "2022-01-26 22:25:07  feature/scan2pdf"    <<< "${output}"
+  grep "2018-10-29 05:28:33.*RoadRunner.*veryold-branch"           <<< "${output}"
+  grep "2021-12-29 15:15:13.*Wiley E. Coyote.*experimental/ocrpdf" <<< "${output}"
+  grep "2021-12-29 15:19:50.*Crayon Shinchan.*packaging/debian"    <<< "${output}"
+  grep "2022-01-26 22:03:29.*Chibi Marukochan.*main"               <<< "${output}"
+  grep "2022-01-26 22:25:07.*Globi.*feature/scan2pdf"              <<< "${output}"
 }
 
 @test "git stale-branches: Threshold 2 weeks ago" {
   output=$(git-stale-branches --threshold '2 weeks ago')
-  grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
-  grep "2021-12-29 15:19:50  packaging/debian"    <<< "${output}"
-  grep "2022-01-26 22:03:29  main"                <<< "${output}"
-  grep "2022-01-26 22:25:07  feature/scan2pdf"    <<< "${output}"
+  grep "2018-10-29 05:28:33.*RoadRunner.*veryold-branch"           <<< "${output}"
+  grep "2021-12-29 15:15:13.*Wiley E. Coyote.*experimental/ocrpdf" <<< "${output}"
+  grep "2021-12-29 15:19:50.*Crayon Shinchan.*packaging/debian"    <<< "${output}"
+  grep "2022-01-26 22:03:29.*Chibi Marukochan.*main"               <<< "${output}"
+  grep "2022-01-26 22:25:07.*Globi.*feature/scan2pdf"              <<< "${output}"
 }
 
 @test "git stale-branches: Per week" {
   output=$(git-stale-branches --per-week)
-  grep "2018-10-29 05:28:33  veryold-branch"      <<< "${output}"
-  grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
-  grep "2021-12-29 15:15:13  experimental/ocrpdf" <<< "${output}"
-  grep "2021-12-29 15:19:50  packaging/debian"    <<< "${output}"
-  grep "2022-01-26 22:03:29  main"                <<< "${output}"
-  grep "2022-01-26 22:25:07  feature/scan2pdf"    <<< "${output}"
+  grep "2018-10-29 05:28:33.*RoadRunner.*veryold-branch"           <<< "${output}"
+  grep "2021-12-29 15:15:13.*Wiley E. Coyote.*experimental/ocrpdf" <<< "${output}"
+  grep "2021-12-29 15:19:50.*Crayon Shinchan.*packaging/debian"    <<< "${output}"
+  grep "2022-01-26 22:03:29.*Chibi Marukochan.*main"               <<< "${output}"
+  grep "2022-01-26 22:25:07.*Globi.*feature/scan2pdf"              <<< "${output}"
 }
 
 @test "git stale-branches: Per week - no 70s" {
