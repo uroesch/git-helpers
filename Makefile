@@ -7,18 +7,20 @@ SHELL := bash
 .DELETE_ON_ERROR:
 MAKEFLAGS    += --warn-undefined-variables
 MAKEFLAGS    += --no-builtin-rules
-BASH_VERSION += 4.2
 
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
-USER_BIN := $(HOME)/bin
+USER_BIN      := $(HOME)/bin
+REPO_NAME     := $(shell basename $(CURDIR))
+BASH_VERSIONS := 4.2 4.3 4.4 5.0 5.1 5.2-rc
+
 
 # -----------------------------------------------------------------------------
 # User install
 # -----------------------------------------------------------------------------
 user_install:
-	@echo "Install git-helpers under $(USER_BIN)"
+	@echo "Install $(REPO_NAME) under $(USER_BIN)"
 	mkdir -p $(USER_BIN) || :
 	for script in bin/*; do
 		basename=$${script##*/}
@@ -27,7 +29,7 @@ user_install:
 	done
 
 user_uninstall:
-	@echo "Uninstall git-helpers from $(USER_BIN)"
+	@echo "Uninstall $(REPO_NAME) from $(USER_BIN)"
 	for script in bin/*; do
 		basename=$${script##*/}
 		if [[ -f $(USER_BIN)/$${basename} ]]; then
@@ -53,7 +55,7 @@ test:
 
 test-bash:
 	@echo "Bash tests"
-	declare -a VERSIONS=( 4.2 4.3 4.4 5.0 5.1 5.2-rc );
+	declare -a VERSIONS=( $(BASH_VERSIONS) );
 	function  setup() {
 		apk add \
 			bats \
