@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # -----------------------------------------------------------------------------
 # Small script to remove the trailing white space from files.
@@ -16,7 +16,7 @@ set -o pipefail
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0#*/}
-declare -r VERSION=0.6.0
+declare -r VERSION=0.6.1
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -g QUIET=
