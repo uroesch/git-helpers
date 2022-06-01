@@ -179,7 +179,7 @@ the branch name. The default time threshold is set to 5 weeks.
 ----
 $ git stale-branches
 
-Last Commit          Committer             Branch name
+Last Commit          Committer            Branch name
 -------------------  -------------------- -------------------------------------
 2022-05-19 23:22:41  Wiley E. Coyote      bugfix/stackoverflow
 
@@ -255,6 +255,49 @@ commit HEAD
   Description:
     Script to show the object types of a commit. This is meant a s tool for
     education to show the inner workings of git.
+----
+
+=== git worklog
+
+Worklog creates a tabular log for the last week or any other number of days or
+weeks specifiable. By default it filters the current user's commits but there is
+an option to specify a different users.
+
+==== Sample output
+
+Shows a list of commits for last week for current users.
+
+[source,console]
+----
+$ git worklog 
+
+Hash     Timestamp           Committer       Subject
+-------- ------------------- --------------- ---------------------------------
+d61af8e  2022-05-31 20:24:05 Urs Roesch      Use env instead path to bash
+9906dd9  2022-05-27 23:41:26 Urs Roesch      Make Makefile more generic
+----
+
+==== Usage
+
+[source,console]
+----
+  Usage:
+    git worklog [options]
+
+  Opttions:
+    -h | --help           This message
+    -a | --author <name>  Set the author's name as commit filter.
+                          Default: Current user as specfied in git config.
+    -d | --day            Show commits for last 24 hours of author.
+    -D | --days <N>       Show commits for the number of days specified.
+    -w | --week           Show commits for week of author.
+    -W | --weeks <N>      Show commits for the number of weeks specified.
+    -V | --version        Display version and exit
+
+  Description:
+    Show a tabular list of commits with the short hash, the author and the
+    subject. Unless specified the default ist to show one week worth of the
+    commit log for the current user.
 ----
 
 === strip-trailing-whitespace
