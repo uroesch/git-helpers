@@ -76,22 +76,9 @@ function git_root() {
 
 # -----------------------------------------------------------------------------
 
-function format_list() {
-  while IFS=$'\t' read commits name; do
-    printf "%5d\t%s\n" "${commits}" "${name}"
-  done
-}
-
-# -----------------------------------------------------------------------------
-
 function show_ranking() {
   git_root &>/dev/null &&
-  git shortlog | \
-    sed -r \
-      -e '/^[A-Za-z0-9]/!d' \
-      -e 's/^(.*) \(([0-9]*)\):/\2\t\1/g' | \
-    sort -rn | \
-    format_list
+  git shortlog -n -s 
 }
 
 # -----------------------------------------------------------------------------
