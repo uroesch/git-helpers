@@ -1,12 +1,67 @@
 = Git Helpers - A small personal script collection to aid with git workflow
+:author:    Urs Roesch
+:firstname: Urs
+:lastname:  Roesch
+:revnumber: 0.7.1
+:keywords:  git, git helpers, version control
+:!toc:
+:icons: font
+:git-user: uroesch
+:repo-name: git-helpers 
+ifdef::env-gitlab[]
+:base-url:   https://gitlab.com/{git-user}/{repo-name}
+:email:      gitlab@bun.ch
+endif::env-gitlab[]
+ifdef::env-github[]
+:base-url:          https://github.com/{git-user}/{repo-name}
+:email:             github@bun.ch
+:tip-caption:       :bulb:
+:note-caption:      :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption:   :fire:
+:warning-caption:   :warning:
+endif::env-github[]
+
+
+ifdef::env-github[]
+image:{base-url}/workflows/bash-compatibility/badge.svg[
+  title="bash-compatilibity",
+  link="{base-url}/actions?query=workflow:bash-compatilbility"
+]
+endif::env-github[]
+
+ifndef::env-github,env-gitlab[]
+image:icons/gitlab-avatar.png[float="left"]
+endif::env-github,env-gitlab[]
+
+ifdef::env-github,env-gitlab[]
++++
+<img src="icons/gitlab-avatar.png" align="left" style="margin-right: 10px">
++++
+endif::env-github,env-gitlab[]
 
 This is a small collection of tools to help with my daily personal git workflow.
 
 == Installation
 
-Simply copy the content of the `bin` directory into your local path e.g.
-`~/bin/` and ensure the they have execute permission and use them as
-outlined below.
+The scripts are meant to be installed in a users' home directory. To do this    
+quickly the `Makefile` in the root of the repository has a target called        
+`user_install`.
+
+[source,console]
+----
+$ make user_install
+Install git-helpers under /home/uroesch/bin
+-> Installing bin/git-autorebase to /home/uroesch/bin/git-autorebase
+-> Installing bin/git-fpc to /home/uroesch/bin/git-fpc
+-> Installing bin/git-opush to /home/uroesch/bin/git-opush
+-> Installing bin/git-rank to /home/uroesch/bin/git-rank
+-> Installing bin/git-stale-branches to /home/uroesch/bin/git-stale-branches
+-> Installing bin/git-walktree to /home/uroesch/bin/git-walktree
+-> Installing bin/git-worklog to /home/uroesch/bin/git-worklog
+-> Installing bin/strip-trailing-whitespace to
+/home/uroesch/bin/strip-trailing-whitespace
+----
 
 == Commands
 
@@ -336,3 +391,7 @@ newlines from a file.
 ----
 
 // vim: set colorcolumn=80 textwidth=80 spell spelllang=en_US :
+
+
+
+
