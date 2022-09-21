@@ -7,7 +7,7 @@
 :!toc:
 :icons: font
 :git-user: uroesch
-:repo-name: git-helpers 
+:repo-name: git-helpers
 ifdef::env-gitlab[]
 :base-url:   https://gitlab.com/{git-user}/{repo-name}
 :email:      gitlab@bun.ch
@@ -25,8 +25,8 @@ endif::env-github[]
 
 ifdef::env-github[]
 image:{base-url}/workflows/bash-compatibility/badge.svg[
-  title="bash-compatilibity",
-  link="{base-url}/actions?query=workflow:bash-compatilbility"
+  title="bash-compatibility",
+  link="{base-url}/actions?query=workflow:bash-compatibility"
 ]
 endif::env-github[]
 
@@ -44,8 +44,8 @@ This is a small collection of tools to help with my daily personal git workflow.
 
 == Installation
 
-The scripts are meant to be installed in a users' home directory. To do this    
-quickly the `Makefile` in the root of the repository has a target called        
+The scripts are meant to be installed in a users' home directory. To do this
+quickly the `Makefile` in the root of the repository has a target called
 `user_install`.
 
 [source,console]
@@ -79,7 +79,7 @@ branches and delete them locally.
   Usage:
     git fpc [options]
 
-  Opttions:
+  Options:
     -h | --help    This message
     -b | --base    Set the default base branch
                    Default: 'main' or 'master'
@@ -91,9 +91,10 @@ branches and delete them locally.
 ----
 
 ==== Customization
-In case your repo's default branch is something other than `master` or `main`
-you can add your default branch to the `DEFAULT_BASES` array. E.g to include the
-branch named `production` to the `git-fpc` script append the value to the array:
+In case your repository's default branch is something other than `master` or
+`main` you can add your default branch to the `DEFAULT_BASES` array. E.g to
+include the branch named `production` to the `git-fpc` script append the value 
+to the array:
 
 [source,bash]
 ----
@@ -104,7 +105,7 @@ declare -a DEFAULT_BASES=( master main production )
 === git autorebase
 
 The `autorebase` command assumes there are multiple local branches that need
-syncronizing with `master` or `main`. It is basically a glorified loop changing
+synchronizing with `master` or `main`. It is basically a glorified loop changing
 into each branch and executing `git rebase (master|main)`.
 
 === Usage
@@ -114,7 +115,7 @@ into each branch and executing `git rebase (master|main)`.
   Usage:
     git autorebase [options]
 
-  Opttions:
+  Options:
     -h | --help                This message
     -p | --push                Push rebased repos to upstream
     -b | --base                Set the default base branch
@@ -129,10 +130,10 @@ into each branch and executing `git rebase (master|main)`.
 ----
 
 ==== Customization
-In case your repo's default branch is something other than `master` or `main`
-you can add your default branch to the `DEFAULT_BASES` array. E.g to include the
-branch named `production` to the `git-autorebase` script append the value to the
- array:
+In case your repository's default branch is something other than `master` or
+`main` you can add your default branch to the `DEFAULT_BASES` array. E.g to 
+include the branch named `production` to the `git-autorebase` script append the
+value to the array:
 
 [source,bash]
 ----
@@ -153,7 +154,7 @@ a remote branch.
   Usage:
     git opush [options]
 
-  Opttions:
+  Options:
     -h | --help    This message
     -f | --force   Force a push to upstream
     -r | --remove  Remove the repository from upstream
@@ -167,10 +168,10 @@ a remote branch.
 
 ==== Customization
 
-In case your repo's default branch is something other than `master` or `main`
-you can add your default branch to the `DEFAULT_BASES` array. E.g to include the
-branch named `production` to the `git-autorebase` script append the value to the
-array:
+In case your repository's default branch is something other than `master` or
+`main` you can add your default branch to the `DEFAULT_BASES` array. E.g to 
+include the branch named `production` to the `git-autorebase` script append the
+value to the array:
 
 [source,bash]
 ----
@@ -179,7 +180,7 @@ declare -a DEFAULT_BASES=( master main production )
 
 === git rank
 
-A tiny helper to show the how many commits each commiter has made based on 
+A tiny helper to show the how many commits each commiter has made based on
 `git shortlog`
 
 ==== Usage
@@ -189,7 +190,7 @@ A tiny helper to show the how many commits each commiter has made based on
   Usage:
     git rank [options]
 
-  Opttions:
+  Options:
     -h | --help    This message
     -V | --version Display version and exit
 
@@ -211,7 +212,7 @@ $ git rank
 === git stale-branches
 
 List the stale branches as a list showing the date in ISO format followed by
-the branch name. The default time threshold is set to 5 weeks. 
+the branch name. The default time threshold is set to 5 weeks.
 
 ==== Usage
 
@@ -220,7 +221,7 @@ the branch name. The default time threshold is set to 5 weeks.
   Usage:
     git stale branches [options]
 
-  Opttions:
+  Options:
     -h | --help                This message
     -t | --threshold <string>  Human readable string like "1 day ago"
     -p | --per-week            Create a list of stale branches divided by week.
@@ -229,7 +230,7 @@ the branch name. The default time threshold is set to 5 weeks.
 
 ==== Example output
 
-.Display braches older than 5 weeks
+.Display branches older than 5 weeks
 [source,console]
 ----
 $ git stale-branches
@@ -266,7 +267,7 @@ linked in relation to each other. Used to visualize it for a Git Course I wrote.
 ==== Sample output
 
 The sample output below shows all objects and how they are linked together.
-This is mainly meant to teach newcomers to git how the unterbelly of the
+This is mainly meant to teach newcomers to git how the underbelly of the
 beast functions.
 
 [source,console]
@@ -324,7 +325,7 @@ Shows a list of commits for last week for current users.
 
 [source,console]
 ----
-$ git worklog 
+$ git worklog
 
 Hash     Timestamp           Committer       Subject
 -------- ------------------- --------------- ---------------------------------
@@ -339,7 +340,7 @@ d61af8e  2022-05-31 20:24:05 Urs Roesch      Use env instead path to bash
   Usage:
     git worklog [options]
 
-  Opttions:
+  Options:
     -h | --help           This message
     -a | --author <name>  Set the author's name as commit filter.
                           Default: Current user as specfied in git config.
@@ -375,12 +376,12 @@ newlines from a file.
 
   Options:
     -h | --help    This message
-    -q | --quiet   Supress output of file names.
+    -q | --quiet   Suppress output of file names.
     -V | --version Display version and exit
 
   Description:
     strip-trailing-whitespace does exactly what the name suggests.
-    Remove trailing whitepace from the each line of a text file.
+    Remove trailing whitespace from the each line of a text file.
     Additionally chops off excessive new lines at file end.
 
     When invoked without a file argument the current directory
@@ -391,7 +392,3 @@ newlines from a file.
 ----
 
 // vim: set colorcolumn=80 textwidth=80 spell spelllang=en_US :
-
-
-
-

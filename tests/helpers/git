@@ -99,35 +99,13 @@ case "${@}" in
   feature/scan2pdf	Globi	1643235907
   BRANCH
   ;;
-'shortlog')
+'shortlog -n -s')
   cat <<"  SHORTLOG" | ltrim
-  Urs Roesch (39):
-        Initial Release
-        Makefile: Add user_install
-        Merge pull request #1 from uroesch/feature/makefile
-
-  Harry Potter (21):
-        Merge pull request #7 from uroesch/gh/add-main
-        Add inital simple bats tests
-        Workflow: Add tests for strip-trailing-whitespace
-        Workflow: Add git walktree basic tests
-        Workflow: Add a check for walktree output
-
-  Road Runner (42):
-        README: Change title wording and intro
-        README: Add customization instructions
-        Add stale-branch checker
-
-  Wiley E. Coyote (33):
-        git stale-branches: Add per week view
-        git stale-branches: Fix default operation mode
-        git stale-branches: Add older than 52 weeks to per week.
-        git stale-branches: Bug fix for empty per week view
-
-  github-actions[bot] (11):
-        Merge pull request #8 from uroesch/workflow/simple-tests
-        Merge pull request #9 from uroesch/workflow/stw
-        Merge pull request #10 from uroesch/workflow/walktree
+  42 Road Runner
+  39 Urs Roesch 
+  33 Wiley E. Coyote
+  21 Harry Potter
+  11 github-actions[bot]
   SHORTLOG
   ;;
 'config user.name')

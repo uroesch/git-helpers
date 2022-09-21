@@ -33,12 +33,12 @@ function usage() {
 
   Options:
     -h | --help    This message
-    -q | --quiet   Supress output of file names.
+    -q | --quiet   Suppress output of file names.
     -V | --version Display version and exit
 
   Description:
     strip-trailing-whitespace does exactly what the name suggests.
-    Remove trailing whitepace from the each line of a text file.
+    Remove trailing whitespace from the each line of a text file.
     Additionally chops off excessive new lines at file end.
 
     When invoked without a file argument the current directory
