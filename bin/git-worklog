@@ -20,7 +20,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION="0.1.0"
+declare -r VERSION="0.1.1"
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -i TIMESTAMP=$(date +%s)
@@ -37,7 +37,7 @@ function usage() {
   Usage:
     ${SCRIPT/-/ } [options]
 
-  Opttions:
+  Options:
     -h | --help           This message
     -a | --author <name>  Set the author's name as commit filter.
                           Default: Current user as specfied in git config.

@@ -21,7 +21,7 @@ shopt -u compat41 2>/dev/null || {
 # Globals
 # -----------------------------------------------------------------------------
 declare -r SCRIPT=${0##*/}
-declare -r VERSION=0.5.0
+declare -r VERSION=0.5.1
 declare -r AUTHOR="Urs Roesch <github@bun.ch>"
 declare -r LICENSE="GPLv2"
 declare -r THRESHOLD_DEFAULT='5 weeks ago'
@@ -42,7 +42,7 @@ function usage() {
   Usage:
     ${SCRIPT//-/ } [options]
 
-  Opttions:
+  Options:
     -h | --help                This message
     -t | --threshold <string>  Human readable string like "1 day ago"
     -p | --per-week            Create a list of stale branches divided by week.
