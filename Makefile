@@ -3,18 +3,16 @@
 # -----------------------------------------------------------------------------
 SHELL := bash
 .ONESHELL:
-.SHELLFLAGS  := -o errexit -o nounset -o pipefail -c
 .DELETE_ON_ERROR:
-MAKEFLAGS    += --warn-undefined-variables
-MAKEFLAGS    += --no-builtin-rules
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
 
 # -----------------------------------------------------------------------------
 # Globals
 # -----------------------------------------------------------------------------
 USER_BIN      := $(HOME)/bin
 REPO_NAME     := $(shell basename $(CURDIR))
-BASH_VERSIONS := 4.2 4.3 4.4 5.0 5.1 5.2-rc
-
+BASH_VERSIONS := 4.2 4.3 4.4 5.0 5.1 5.2
 
 # -----------------------------------------------------------------------------
 # User install
@@ -24,6 +22,7 @@ user_install:
 	mkdir -p $(USER_BIN) || :
 	for script in bin/*; do
 		basename=$${script##*/}
+		echo $${basename}
 		install $${script} $(USER_BIN)/$${basename} &&
 			echo "-> Installing $${script} to $(USER_BIN)/$${basename}"
 	done

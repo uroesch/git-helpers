@@ -1,0 +1,103 @@
+# -----------------------------------------------------------------------------
+# Test pdftools
+# Author: Urs Roesch https://github.com/uroesch
+# Version: 0.4.0
+# -----------------------------------------------------------------------------
+name: os-compatibility
+
+on:
+  push:
+    branches:
+    - workflow/*
+  pull_request:
+    branches:
+    - master
+    - main
+
+jobs:
+  debian:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.name }}:${{ matrix.release }}
+    strategy:
+      matrix:
+        include:
+          - { name: debian,      release: 9 }
+          - { name: debian,      release: 10 }
+          - { name: debian,      release: 11 }
+          - { name: ubuntu,      release: 16.04 }
+          - { name: ubuntu,      release: 18.04 }
+          - { name: ubuntu,      release: 20.04 }
+          - { name: ubuntu,      release: 22.04 }
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+
+    steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        apt-get update
+        apt-get -y install bats gawk git make
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Reinit git repo for old versions of git
+      shell: bash
+      run: |
+        test -d .git && exit 0
+        git init
+        git config --global --add safe.directory $(pwd)
+        git remote add origin ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git
+        git fetch
+
+    - name: Test git-helpers functionality
+      shell: bash
+      run: |
+        git config --global --add safe.directory $(pwd)
+        make test
+
+  redhat:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.name }}:${{ matrix.release }}
+    strategy:
+      matrix:
+        include:
+          - { name: almalinux,   release: 8 }
+          - { name: almalinux,   release: 9 }
+          - { name: centos,      release: 7 }
+          - { name: rockylinux,  release: 8 }
+          - { name: rockylinux,  release: 9 }
+
+    steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        yum -y install epel-release
+        yum -y install bats git make 
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Reinit git repo for old versions of git
+      shell: bash
+      run: |
+        test -d .git && exit 0
+        git init
+        git config --global --add safe.directory $(pwd)
+        git remote add origin ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git
+        git fetch
+
+    - name: Test git-helpers functionality
+      shell: bash
+      run: |
+        git config --global --add safe.directory $(pwd)
+        make test
