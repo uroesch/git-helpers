@@ -23,13 +23,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - { name: debian,      release: 10 }
-          - { name: debian,      release: 11 }
-          - { name: debian,      release: 12 }
-          - { name: ubuntu,      release: 16.04 }
-          - { name: ubuntu,      release: 18.04 }
-          - { name: ubuntu,      release: 20.04 }
-          - { name: ubuntu,      release: 22.04 }
+          - { name: debian, release: 10 }
+          - { name: debian, release: 11 }
+          - { name: debian, release: 12 }
+          - { name: ubuntu, release: 16.04 }
+          - { name: ubuntu, release: 18.04 }
+          - { name: ubuntu, release: 20.04 }
+          - { name: ubuntu, release: 22.04 }
     env:
       DEBIAN_FRONTEND: noninteractive
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
@@ -42,7 +42,8 @@ jobs:
         apt-get -y install bats gawk git make
 
     - name: Checkout repository
-      uses: actions/checkout@v3
+      # Note: v4 does not work with Ubuntu 16.04
+      uses: actions/checkout@v3    
       with:
         fetch-depth: 0
 
@@ -83,6 +84,7 @@ jobs:
         yum -y install bats git make
 
     - name: Checkout repository
+      # Note: v4 does not work with Ubuntu 16.04
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
